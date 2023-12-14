@@ -3,16 +3,16 @@
 #include "GameObject.h"
 #include "ECS/Components.h"
 
+SDL_Renderer* Game::renderer = nullptr;
 
-GameObject* cowboy;
-
-bool card_hovered;
 int r_scale;
 int x, y = 0;
 SDL_Texture* background;
 
 Manager manager;
-auto& newplayer(manager.addEntity());
+auto& player(manager.addEntity());
+auto& cowboy(manager.addEntity());
+
 
 Game::Game()
 {}
@@ -48,11 +48,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	else {
 		isRunning = false;
 	}
-	background = TextureManager::LoadTexture("assets/back.png", renderer);
-	cowboy = new GameObject("assets/cowboy.png", renderer, 60, 0, 60, 59);
+	background = TextureManager::LoadTexture("assets/back.png");
 
-	newplayer.addComponent<PositionComponent>();
-	newplayer.getComponent<PositionComponent>().setPos(30,30);
+	//ECS 
+
+	player.addComponent<PositionComponent>();
+	player.addComponent<SpriteComponent>("assets/coin.png", 27, 30);
+
+	cowboy.addComponent<PositionComponent>(60, 0);
+	cowboy.addComponent<SpriteComponent>("assets/cowboy.png", 59, 60);
 }
 
 void Game::handleEvents()
@@ -77,16 +81,14 @@ void Game::handleEvents()
 
 void Game::update()
 {
-	cowboy->Update();
 	manager.update();
-	std::cout << newplayer.getComponent<PositionComponent>().x() << endl;
 }
 
 void Game::render()
 {
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, background, NULL, 0);
-	cowboy->Render();
+	manager.draw();
 	SDL_RenderPresent(renderer);
 }
 

@@ -3,10 +3,12 @@
 
 #include "game.h"
 
-class TextureManager {
+class TextureManager : protected Game{
 
 public:
-	static SDL_Texture* LoadTexture(const char* file, SDL_Renderer* ren);
+	static SDL_Texture* LoadTexture(const char* file);
+
+	static void Draw(SDL_Texture* tex, SDL_Rect dest);
 };
 
 #endif
