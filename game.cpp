@@ -1,11 +1,13 @@
+int r_scale = 1;
+
 #include "game.h"
 #include "TextureManager.h"
 #include "GameObject.h"
 #include "ECS/Components.h"
 
 SDL_Renderer* Game::renderer = nullptr;
+SDL_Event Game::event;
 
-int r_scale;
 int x, y = 0;
 SDL_Texture* background;
 
@@ -53,15 +55,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	//ECS 
 
 	player.addComponent<PositionComponent>();
-	player.addComponent<SpriteComponent>("assets/coin.png", 27, 30);
+	player.addComponent<SpriteComponent>("assets/9-Spades.png", 32, 48);
 
 	cowboy.addComponent<PositionComponent>(60, 0);
 	cowboy.addComponent<SpriteComponent>("assets/cowboy.png", 59, 60);
+	cowboy.addComponent<MouseController>();
 }
 
 void Game::handleEvents()
 {
-	SDL_Event event;
 	SDL_PollEvent(&event);
 	switch (event.type) {
 		case SDL_QUIT:
@@ -69,7 +71,6 @@ void Game::handleEvents()
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			SDL_GetMouseState(&x, &y);
-			
 			//cout << "Clicked";
 			break;
 		case SDL_MOUSEMOTION:
