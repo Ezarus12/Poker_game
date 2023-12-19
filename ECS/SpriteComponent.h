@@ -12,9 +12,10 @@ private:
 	int width;
 	int height;
 
-	bool animated = false;
-	int frames = 0;
-	int speed = 100;
+	int src_x = 0;
+	int src_y = 0;
+
+	int cnt = 0;
 
 public:
 	SpriteComponent() = default;
@@ -25,14 +26,13 @@ public:
 		height = h;
 	}
 
-	SpriteComponent(const char* path, int w, int h, int frames_, int speed_)
+	SpriteComponent(const char* path, int w, int h, int src_x_ , int src_y_)
 	{
-		animated = true;
-		frames = frames_;
-		speed = speed_;
 		setTex(path);
 		width = w;
 		height = h;
+		src_x = src_x_;
+		src_y = src_y_;
 	}
 
 	void setTex(const char* path) {
@@ -43,8 +43,11 @@ public:
 	{
 		position = &entity->getComponent<PositionComponent>();
 
-		srcRect.x = srcRect.y = 0;
-		srcRect.w = srcRect.h = 32;
+		srcRect.x = width * src_x;
+		srcRect.y = height * src_y;
+		srcRect.w = width;
+		srcRect.h = height;
+
 		destRect.w = width;
 		destRect.h = height;
 		
@@ -52,10 +55,17 @@ public:
 
 	void update() override
 	{
-
-		/*if (animated) {
-			srcRect.x = width * static_cast<int>((SDL_GetTicks() / speed) % frames);
+		//scrolling through deck
+	/*	cnt++;
+		if (cnt % 300 == 0) {
+			src_x++;
+			if (src_x == 4) {
+				src_x = 0;
+				src_y++;
+			}
 		}*/
+		srcRect.y = height * src_y;
+		srcRect.x = width * src_x;
 
 		destRect.x = position->x();
 		destRect.y = position->y();
@@ -63,7 +73,7 @@ public:
 
 	void draw() override
 	{
-		TextureManager::Draw(texture, destRect);
+		TextureManager::Draw(texture, srcRect, destRect);
 	}
 
 	int x() { return position->x(); }
