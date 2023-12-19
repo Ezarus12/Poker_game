@@ -15,7 +15,9 @@ public:
 	Card c2;
 
 	Hand();
-	Hand(Card _c1, Card _c2) : c1(_c1), c2(_c2) {}
+	Hand(Card _c1, Card _c2) : c1(_c1), c2(_c2) {
+	
+	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Hand& h);
 

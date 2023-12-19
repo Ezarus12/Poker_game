@@ -29,6 +29,8 @@ vector<Hand> players; //vector storing hands for all of the player and the enemi
 
 vector<vector<Card>> hands; //vector storing vectors for each player containg hand's cards and table
 
+vector<int> scores;
+
 Game::Game()
 {}
 
@@ -137,6 +139,8 @@ void Game::update()
 
 		card3.addComponent<PositionComponent>(card_x + card_spacing * 2, card_y);
 		card3.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[2].get_suit_int(), table[2].get_rank() - 2);
+
+		ignoreHands(4);
 	}
 	if (cnt >= 1200 && Game::event.type == SDL_MOUSEBUTTONDOWN) {
 		card4.addComponent<PositionComponent>(card_x + card_spacing * 3, card_y);
@@ -146,7 +150,6 @@ void Game::update()
 		card5.addComponent<PositionComponent>(card_x + card_spacing * 4, card_y);
 		card5.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[4].get_suit_int(), table[4].get_rank() - 2);
 	}
-
 	if (cnt >= 3000 && Game::event.type == SDL_MOUSEBUTTONDOWN) {
 		for (int i = 0; i < players_num; i++) {
 			hands.push_back(combine(table, players, i));
@@ -156,9 +159,32 @@ void Game::update()
 			cout << "Next player: " << endl;
 		}
 		for (int i = 0; i < players_num; i++) {
-			score(win(hands[i]));
+			scores.push_back(win(hands[i]));
+			score(scores[i]);
+		}
+		if (scores[0] < scores[1]) {
+			cout << "Player Won!" << endl;
+		}
+		else if (scores[0] > scores[1]) {
+			cout << "Enemy Won!" << endl;
+		}
+		else  {
+			cout << "Draw" << endl;
+			//Compare(scores[0]);
+			ignoreHands(scores[0]);
+			for (int i = 0; i < players_num; i++) {
+				scores[i] = (win(hands[i]));
+				score(scores[i]);
+			}
+			if (scores[0] < scores[1]) {
+				cout << "Player Won!" << endl;
+			}
+			else if (scores[0] > scores[1]) {
+				cout << "Enemy Won!" << endl;
+			}
 		}
 	}
+	
 	
 	
 

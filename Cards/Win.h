@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <unordered_map>
 #include <algorithm>
 #include <vector>
@@ -10,6 +11,9 @@ static int pairRank = 0;
 static int threeRank = 0;
 static int fourRank = 0;
 static char flushSuit = '\0';
+static int handRank = 0; //Highest card in the hand
+
+static bool ignoreHand[10]; //array storing value to ignore specific hand 0-9
 
 int FourOfAKind(const vector<Card>& cards, int score) {
 	for (const Card& card : cards) {
@@ -40,8 +44,10 @@ int Pairs(const std::vector<Card>& cards, int score) {
 			pairRank = card.get_rank();
 			pair_cnt++;
 		}
-		if (pair_cnt >= 4) { // 4 because for loop goes through every card
-			score = min(score, 8); //two pairs
+		if (!ignoreHand[7]) {
+			if (pair_cnt >= 4) { // 4 because for loop goes through every card
+				score = min(score, 8); //two pairs
+			}
 		}
 	}
 
@@ -109,8 +115,10 @@ int SameRanks(const vector<Card>& cards, int score) {
 					cnt_fh++;
 				}
 			}
-			if (cnt_fh >= 2) {
-				score = min(score, 4); //full house
+			if (!ignoreHand[3]) {
+				if (cnt_fh >= 2) {
+					score = min(score, 4); //full house
+				}
 			}
 
 		}
@@ -159,11 +167,15 @@ int Straight(const vector<Card>& cards, int score) {
 			}
 		}
 		if (straight && (f_cnt[0] >= 5 || f_cnt[1] >= 5 || f_cnt[2] >= 5 || f_cnt[3] >= 5)) {
-			if (maxStraightRank == 14) {
-				score = min(score, 1); //royal flush
+			if (!ignoreHand[0]) {
+				if (maxStraightRank == 14) {
+					score = min(score, 1); //royal flush
+				}
 			}
-			score = min(score, 2); //straight flush
-			maxPokerRank = maxStraightRank;
+			if (!ignoreHand[1]) {
+				score = min(score, 2); //straight flush
+				maxPokerRank = maxStraightRank;
+			}
 		}
 
 		if (straight) {
@@ -183,21 +195,35 @@ int Straight(const vector<Card>& cards, int score) {
 int win(const vector<Card>& cards) {
 	//reset static values for every check
 	maxStraightRank = 0;
+	maxPokerRank = 0;
+	pairRank = 0;
+	threeRank = 0;
+	fourRank = 0;
 	flushSuit = '\0';
 	int score = 10;
-
 	//straight
-	score = min(score, Straight(cards, score));
-
+	if (!ignoreHand[5]) {
+		score = min(score, Straight(cards, score));
+	}
 	//Flush
-	score = min(score, Flush(cards, score));
+	if (!ignoreHand[4]) {
+		score = min(score, Flush(cards, score));
+	}
 
-	//three of kinds, full house and pairs
-	score = min(score, SameRanks(cards, score));
+	//Three of kinds and full house
+	if (!ignoreHand[6]) {
+		score = min(score, SameRanks(cards, score));
+	}
 
-	score = min(score, FourOfAKind(cards, score));
+	//Four of kind
+	if (!ignoreHand[2]) {
+		score = min(score, FourOfAKind(cards, score));
+	}
 
-	score = min(score, Pairs(cards, score));
+	//Pairs
+	if (!ignoreHand[8]) {
+		score = min(score, Pairs(cards, score));
+	}
 	return score;
 }
 
@@ -249,10 +275,5 @@ void score(int s) {
 	}
 
 	//Reset all the variables for the next player
-	maxStraightRank = 0;
-	maxPokerRank = 0;
-	pairRank = 0;
-	threeRank = 0;
-	fourRank = 0;
-	flushSuit = '\0';
+	
 }
