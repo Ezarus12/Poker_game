@@ -5,17 +5,10 @@
 #include <vector>
 #include <iterator>
 
-static int maxStraightRank = 0;
-static int maxPokerRank = 0;
-static int pairRank = 0;
-static int threeRank = 0;
-static int fourRank = 0;
-static char flushSuit = '\0';
-static int handRank = 0; //Highest card in the hand
-
 static bool ignoreHand[10]; //array storing value to ignore specific hand 0-9
 
-int FourOfAKind(const vector<Card>& cards, int score) {
+int FourOfAKind(const vector<Card>& cards, Score& s) {
+	int score = s.score;
 	for (const Card& card : cards) {
 		// Count occurrences of cards with the same rank
 		int count = count_if(cards.begin(), cards.end(), [&](const Card& c) {
@@ -24,14 +17,15 @@ int FourOfAKind(const vector<Card>& cards, int score) {
 
 		if (count >= 4) {
 			score = min(score, 3); //four of kind
-			fourRank = card.get_rank();
+			s.fourRank = card.get_rank();
 		}
 	}
 
 	return score;
 }
 
-int Pairs(const std::vector<Card>& cards, int score) {
+int Pairs(const std::vector<Card>& cards, Score& s) {
+	int score = s.score;
 	int pair_cnt = 0;
 	for (const Card& card : cards) {
 		// Count occurrences of cards with the same rank
@@ -41,7 +35,7 @@ int Pairs(const std::vector<Card>& cards, int score) {
 
 		if (count == 2) {
 			score = min(score, 9); //pair
-			pairRank = card.get_rank();
+			s.pairRank = card.get_rank();
 			pair_cnt++;
 		}
 		if (!ignoreHand[7]) {
@@ -54,7 +48,8 @@ int Pairs(const std::vector<Card>& cards, int score) {
 	return score;
 }
 
-int Flush(const vector<Card>& cards, int score) {
+int Flush(const vector<Card>& cards, Score& s) {
+	int score = s.score;
 	int f_cnt[4] = { 0,0,0,0 };
 	for (int i = 0; i <= cards.size() - 1; i++) {
 		if (cards[i].get_suit() == 'H') {
@@ -72,24 +67,25 @@ int Flush(const vector<Card>& cards, int score) {
 	}
 	if (f_cnt[0] >= 5) {
 		score = min(score, 5); //flush
-		flushSuit = 'H';
+		s.flushSuit = 'H';
 	}
 	if (f_cnt[1] >= 5) {
 		score = min(score, 5); //flush
-		flushSuit = 'D';
+		s.flushSuit = 'D';
 	}
 	if (f_cnt[2] >= 5) {
 		score = min(score, 5); //flush
-		flushSuit = 'C';
+		s.flushSuit = 'C';
 	}
 	if (f_cnt[3] >= 5) {
 		score = min(score, 5); //flush
-		flushSuit = 'S';
+		s.flushSuit = 'S';
 	}
 	return score;
 }
 
-int SameRanks(const vector<Card>& cards, int score) {
+int SameRanks(const vector<Card>& cards, Score& s) {
+	int score = s.score;
 	int index = 0;
 	int cnt;
 	while (cards[index] != cards[6]) {
@@ -126,7 +122,8 @@ int SameRanks(const vector<Card>& cards, int score) {
 	}
 }
 
-int Straight(const vector<Card>& cards, int score) {
+int Straight(const vector<Card>& cards, Score& s) {
+	int score = s.score;
 	int cnt = 1;
 	bool straight = false;
 	int f_cnt[4] = { 1,1,1,1 };
@@ -162,19 +159,19 @@ int Straight(const vector<Card>& cards, int score) {
 				f_cnt[3]++;
 			}
 			if (cnt >= 5) {
-				maxStraightRank = max(maxStraightRank, cards[i + 1].get_rank());
+				s.maxStraightRank = max(s.maxStraightRank, cards[i + 1].get_rank());
 				straight = true;
 			}
 		}
 		if (straight && (f_cnt[0] >= 5 || f_cnt[1] >= 5 || f_cnt[2] >= 5 || f_cnt[3] >= 5)) {
 			if (!ignoreHand[0]) {
-				if (maxStraightRank == 14) {
+				if (s.maxStraightRank == 14) {
 					score = min(score, 1); //royal flush
 				}
 			}
 			if (!ignoreHand[1]) {
 				score = min(score, 2); //straight flush
-				maxPokerRank = maxStraightRank;
+				s.maxPokerRank = s.maxStraightRank;
 			}
 		}
 
@@ -192,48 +189,41 @@ int Straight(const vector<Card>& cards, int score) {
 	return score;
 }
 
-int win(const vector<Card>& cards) {
-	//reset static values for every check
-	maxStraightRank = 0;
-	maxPokerRank = 0;
-	pairRank = 0;
-	threeRank = 0;
-	fourRank = 0;
-	flushSuit = '\0';
-	int score = 10;
+void win(const vector<Card>& cards, Score& s) {
+
+	s.score = 10;
 	//straight
 	if (!ignoreHand[5]) {
-		score = min(score, Straight(cards, score));
+		s.score = min(s.score, Straight(cards, s));
 	}
 	//Flush
 	if (!ignoreHand[4]) {
-		score = min(score, Flush(cards, score));
+		s.score = min(s.score, Flush(cards, s));
 	}
 
 	//Three of kinds and full house
 	if (!ignoreHand[6]) {
-		score = min(score, SameRanks(cards, score));
+		s.score = min(s.score, SameRanks(cards, s));
 	}
 
 	//Four of kind
 	if (!ignoreHand[2]) {
-		score = min(score, FourOfAKind(cards, score));
+		s.score = min(s.score, FourOfAKind(cards, s));
 	}
 
 	//Pairs
 	if (!ignoreHand[8]) {
-		score = min(score, Pairs(cards, score));
+		s.score = min(s.score, Pairs(cards, s));
 	}
-	return score;
 }
 
-void score(int s) {
-	switch (s) {
+void score(Score s) {
+	switch (s.score) {
 	case 1:
 		cout << "ROYAL POKER!!!" << endl;
 		break;
 	case 2:
-		cout << "Poker! Highest card: " << maxPokerRank << std::endl;
+		cout << "Poker! Highest card: " << s.maxPokerRank << std::endl;
 		break;
 	case 3:
 		cout << "Four of kind!" << endl;
@@ -243,22 +233,22 @@ void score(int s) {
 		break;
 	case 5:
 		cout << "Flush";
-		if (flushSuit == 'H') {
+		if (s.flushSuit == 'H') {
 			cout << "Hearts";
 		}
-		if (flushSuit == 'D') {
+		if (s.flushSuit == 'D') {
 			cout << "Diamonds";
 		}
-		if (flushSuit == 'C') {
+		if (s.flushSuit == 'C') {
 			cout << "Clubs";
 		}
-		if (flushSuit == 'S') {
+		if (s.flushSuit == 'S') {
 			cout << "Spades";
 		}
 		cout << endl;
 		break;
 	case 6:
-		cout << "Straight! Highest card: " << maxStraightRank << std::endl;
+		cout << "Straight! Highest card: " << s.maxStraightRank << std::endl;
 		break;
 	case 7:
 		cout << "three of kind!" << endl;
@@ -267,7 +257,7 @@ void score(int s) {
 		cout << "Two Pairs!" << endl;
 		break;
 	case 9:
-		cout << "Pair!" << " " << pairRank << endl;
+		cout << "Pair!" << " " << s.pairRank << endl;
 		break;
 	case 10:
 		cout << "High card!" << endl;

@@ -5,4 +5,4 @@
 #include "Deck.h"
 #include "Win.h"
 #include "Hand.h"
-#include "Draw.h"
+#include "Tie.h"

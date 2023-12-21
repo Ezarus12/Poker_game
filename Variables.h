@@ -6,4 +6,4 @@ int r_scale = 1;
 
 int x, y = 0;
 
-int players_num = 2; // Number of individual hands to draw
+const int players_num = 2; // Number of individual hands to draw

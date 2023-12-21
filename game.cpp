@@ -21,6 +21,9 @@ auto& card5(manager.addEntity());
 auto& hand_card1(manager.addEntity());
 auto& hand_card2(manager.addEntity());
 
+auto& enemy_card1(manager.addEntity());
+auto& enemy_card2(manager.addEntity());
+
 auto& back_card(manager.addEntity());
 
 vector<Card> table;
@@ -29,7 +32,9 @@ vector<Hand> players; //vector storing hands for all of the player and the enemi
 
 vector<vector<Card>> hands; //vector storing vectors for each player containg hand's cards and table
 
-vector<int> scores;
+vector<Score> scores = {new Score(), new Score()}; //vector storing score for each player and corresponding highest card
+
+
 
 Game::Game()
 {}
@@ -74,10 +79,12 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	//Create Deck
 	vector<Card> Deck;
 	fill_deck(Deck);
-
-	//Draw hands
+	//Draw hands and create score for each of the players
 	for (int i = 0; i < players_num; i++) {
 		players.push_back(draw(Deck));
+		Score* s = new Score();
+		scores.push_back(*s);
+		scores[i].handRank = max(players[i].c1.get_rank(), players[i].c2.get_rank()); //Find highest card in hand
 	}
 
 	//Create table
@@ -102,6 +109,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	cowboy.addComponent<PositionComponent>(60, 0);
 	cowboy.addComponent<SpriteComponent>("assets/cowboy.png", 60, 60);
 	cowboy.addComponent<MouseController>();
+
+	
 }
 
 void Game::handleEvents()
@@ -140,7 +149,7 @@ void Game::update()
 		card3.addComponent<PositionComponent>(card_x + card_spacing * 2, card_y);
 		card3.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[2].get_suit_int(), table[2].get_rank() - 2);
 
-		ignoreHands(4);
+		cout << scores[0].handRank << " Drugi gracz: " << scores[1].handRank << endl;
 	}
 	if (cnt >= 1200 && Game::event.type == SDL_MOUSEBUTTONDOWN) {
 		card4.addComponent<PositionComponent>(card_x + card_spacing * 3, card_y);
@@ -149,6 +158,11 @@ void Game::update()
 	if (cnt >= 1500 && Game::event.type == SDL_MOUSEBUTTONDOWN) {
 		card5.addComponent<PositionComponent>(card_x + card_spacing * 4, card_y);
 		card5.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[4].get_suit_int(), table[4].get_rank() - 2);
+
+		enemy_card1.addComponent<PositionComponent>(160, 0);
+		enemy_card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
+		enemy_card2.addComponent<PositionComponent>(192, 0);
+		enemy_card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
 	}
 	if (cnt >= 3000 && Game::event.type == SDL_MOUSEBUTTONDOWN) {
 		for (int i = 0; i < players_num; i++) {
@@ -159,29 +173,18 @@ void Game::update()
 			cout << "Next player: " << endl;
 		}
 		for (int i = 0; i < players_num; i++) {
-			scores.push_back(win(hands[i]));
+			win(hands[i], scores[i]);
 			score(scores[i]);
 		}
-		if (scores[0] < scores[1]) {
+		if (scores[0].score < scores[1].score) {
 			cout << "Player Won!" << endl;
 		}
-		else if (scores[0] > scores[1]) {
+		else if (scores[0].score > scores[1].score) {
 			cout << "Enemy Won!" << endl;
 		}
 		else  {
 			cout << "Draw" << endl;
-			//Compare(scores[0]);
-			ignoreHands(scores[0]);
-			for (int i = 0; i < players_num; i++) {
-				scores[i] = (win(hands[i]));
-				score(scores[i]);
-			}
-			if (scores[0] < scores[1]) {
-				cout << "Player Won!" << endl;
-			}
-			else if (scores[0] > scores[1]) {
-				cout << "Enemy Won!" << endl;
-			}
+			Compare(scores, hands);
 		}
 	}
 	
