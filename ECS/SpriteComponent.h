@@ -39,6 +39,11 @@ public:
 		texture = TextureManager::LoadTexture(path);
 	}
 
+	void changeSprite(int src_x_, int src_y_) {
+		src_x = src_x_;
+		src_y = src_y_;
+	}
+
 	void init() override
 	{
 		position = &entity->getComponent<PositionComponent>();

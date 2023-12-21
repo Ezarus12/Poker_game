@@ -32,7 +32,7 @@ vector<Hand> players; //vector storing hands for all of the player and the enemi
 
 vector<vector<Card>> hands; //vector storing vectors for each player containg hand's cards and table
 
-vector<Score> scores = {new Score(), new Score()}; //vector storing score for each player and corresponding highest card
+vector<Score> scores; //vector storing score for each player and corresponding highest card
 
 
 
@@ -95,21 +95,26 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		Deck.erase(Deck.begin() + r);
 	}
 
+	 //192 25
 
 	//ECS 
 
-	hand_card1.addComponent<PositionComponent>(80, 132 + 16);
+	hand_card1.addComponent<PositionComponent>(80, 148);
 	hand_card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[0].c1.get_suit_int(), players[0].c1.get_rank() - 2);
-	hand_card2.addComponent<PositionComponent>(112, 132 + 16);
+	hand_card2.addComponent<PositionComponent>(112, 148);
 	hand_card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[0].c2.get_suit_int(), players[0].c2.get_rank() - 2);
 
-	back_card.addComponent<PositionComponent>(14, card_y);
+	back_card.addComponent<PositionComponent>(12, card_y);
 	back_card.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
 
 	cowboy.addComponent<PositionComponent>(60, 0);
 	cowboy.addComponent<SpriteComponent>("assets/cowboy.png", 60, 60);
 	cowboy.addComponent<MouseController>();
 
+	enemy_card1.addComponent<PositionComponent>(192, 10);
+	enemy_card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
+	enemy_card2.addComponent<PositionComponent>(192 + card_spacing, 10);
+	enemy_card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
 	
 }
 
@@ -159,12 +164,11 @@ void Game::update()
 		card5.addComponent<PositionComponent>(card_x + card_spacing * 4, card_y);
 		card5.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[4].get_suit_int(), table[4].get_rank() - 2);
 
-		enemy_card1.addComponent<PositionComponent>(160, 0);
-		enemy_card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
-		enemy_card2.addComponent<PositionComponent>(192, 0);
-		enemy_card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
+		
 	}
 	if (cnt >= 3000 && Game::event.type == SDL_MOUSEBUTTONDOWN) {
+		enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
+		enemy_card2.getComponent<SpriteComponent>().changeSprite(players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
 		for (int i = 0; i < players_num; i++) {
 			hands.push_back(combine(table, players, i));
 			for (int j = 0; j < 7; j++) {
@@ -172,20 +176,7 @@ void Game::update()
 			}
 			cout << "Next player: " << endl;
 		}
-		for (int i = 0; i < players_num; i++) {
-			win(hands[i], scores[i]);
-			score(scores[i]);
-		}
-		if (scores[0].score < scores[1].score) {
-			cout << "Player Won!" << endl;
-		}
-		else if (scores[0].score > scores[1].score) {
-			cout << "Enemy Won!" << endl;
-		}
-		else  {
-			cout << "Draw" << endl;
-			Compare(scores, hands);
-		}
+		Result(scores, hands);
 	}
 	
 	
@@ -207,7 +198,7 @@ void Game::update()
 void Game::render()
 {
 	SDL_RenderClear(renderer);
-	//SDL_RenderCopy(renderer, background, NULL, 0);
+	SDL_RenderCopy(renderer, background, NULL, 0);
 	manager.draw();
 	SDL_RenderPresent(renderer);
 }

@@ -51,35 +51,45 @@ int Pairs(const std::vector<Card>& cards, Score& s) {
 int Flush(const vector<Card>& cards, Score& s) {
 	int score = s.score;
 	int f_cnt[4] = { 0,0,0,0 };
+	int maxRank[4] = { 0,0,0,0 };
 	for (int i = 0; i <= cards.size() - 1; i++) {
 		if (cards[i].get_suit() == 'H') {
 			f_cnt[0]++;
+			maxRank[0] += cards[i].get_rank(); //Summing all of the flush cards to determin who has the higher flush
 		}
 		else if (cards[i].get_suit() == 'D') {
 			f_cnt[1]++;
+			maxRank[1] += cards[i].get_rank(); //Summing all of the flush cards to determin who has the higher flush
 		}
 		else if (cards[i].get_suit() == 'C') {
 			f_cnt[2]++;
+			maxRank[2] += cards[i].get_rank(); //Summing all of the flush cards to determin who has the higher flush
 		}
 		else if (cards[i].get_suit() == 'S') {
 			f_cnt[3]++;
+			maxRank[3] += cards[i].get_rank(); //Summing all of the flush cards to determin who has the higher flush
 		}
 	}
 	if (f_cnt[0] >= 5) {
+
 		score = min(score, 5); //flush
 		s.flushSuit = 'H';
+		s.maxFlushRank = maxRank[0];
 	}
 	if (f_cnt[1] >= 5) {
 		score = min(score, 5); //flush
 		s.flushSuit = 'D';
+		s.maxFlushRank = maxRank[1];
 	}
 	if (f_cnt[2] >= 5) {
 		score = min(score, 5); //flush
 		s.flushSuit = 'C';
+		s.maxFlushRank = maxRank[2];
 	}
 	if (f_cnt[3] >= 5) {
 		score = min(score, 5); //flush
 		s.flushSuit = 'S';
+		s.maxFlushRank = maxRank[3];
 	}
 	return score;
 }
@@ -217,7 +227,7 @@ void win(const vector<Card>& cards, Score& s) {
 	}
 }
 
-void score(Score s) {
+void score(Score &s) {
 	switch (s.score) {
 	case 1:
 		cout << "ROYAL POKER!!!" << endl;
@@ -266,4 +276,23 @@ void score(Score s) {
 
 	//Reset all the variables for the next player
 	
+}
+
+
+void Compare(vector<Score>& s, vector<vector<Card>>& hands);
+
+void Result(vector<Score>& s, vector<vector<Card>>& hands) {
+	for (int i = 0; i < players_num; i++) {
+		win(hands[i], s[i]);
+		score(s[i]);
+	}
+	if (s[0].score < s[1].score) {
+		cout << "Player Won!" << endl;
+	}
+	else if (s[0].score > s[1].score) {
+		cout << "Enemy Won!" << endl;
+	}
+	else {
+		Compare(s, hands);
+	}
 }

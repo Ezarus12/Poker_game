@@ -11,6 +11,7 @@ public:
 	int threeRank = 0; //Highest three of kind
 	int fourRank = 0; //Highest four of kind
 	char flushSuit = '\0';
+	int maxFlushRank = 0; //Highest card in the flush
 	int handRank = 0; //Highest card in the hand
 
 	Score() = default;

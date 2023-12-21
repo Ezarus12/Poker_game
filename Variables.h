@@ -1,5 +1,5 @@
 int card_x = 76; // X coordinates of the first card placed on the table
-int card_y = 66; // X coordinates of the first card placed on the table
+int card_y = 76; // X coordinates of the first card placed on the table
 int card_spacing = 34; // X spacing between cards placed on the table
 
 int r_scale = 1;
