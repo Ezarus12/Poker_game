@@ -4,6 +4,8 @@
 #include "GameObject.h"
 #include "ECS/Components.h"
 #include "Cards/Components.h"
+#include "text.h"
+#include <string>
 
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
@@ -26,6 +28,13 @@ auto& enemy_card2(manager.addEntity());
 
 auto& back_card(manager.addEntity());
 
+//betting button
+auto& BB_center(manager.addEntity());
+auto& BB_sub_big(manager.addEntity());
+auto& BB_sub_small(manager.addEntity());
+auto& BB_add_big(manager.addEntity());
+auto& BB_add_small(manager.addEntity());
+
 vector<Card> table;
 
 vector<Hand> players; //vector storing hands for all of the player and the enemies (main player == player[0]);
@@ -34,7 +43,17 @@ vector<vector<Card>> hands; //vector storing vectors for each player containg ha
 
 vector<Score> scores; //vector storing score for each player and corresponding highest card
 
+int money[2] = {100, 100};
 
+bool bigblind[players_num] = { true, false };
+
+int pool = 0;
+
+int bet = 0;
+
+SDL_Color red = { 148,0,0,255 };
+
+auto& money_text(manager.addEntity());
 
 Game::Game()
 {}
@@ -53,7 +72,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			flags = SDL_WINDOW_FULLSCREEN;
 		}
 
-		if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
+		if (SDL_Init(SDL_INIT_EVERYTHING) == 0 && TTF_Init() == 0) {
 			cout << "Subsystem Initialised" << endl;
 
 			window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
@@ -95,13 +114,19 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		Deck.erase(Deck.begin() + r);
 	}
 
-	 //192 25
+	////TEST!!!!!!
+	//vector<Card> cards_test = { Card(5,'D'),Card(5,'H'),Card(6,'C'),Card(8,'S'),Card(14,'D'),Card(14,'H'),Card(14,'S') };
+	//vector<Score> scores_test;
+	//Score* s = new Score();
+	//scores_test.push_back(*s);
+	//win(cards_test, scores_test[0]);
+	//score(scores_test[0]);
 
 	//ECS 
 
-	hand_card1.addComponent<PositionComponent>(80, 148);
+	hand_card1.addComponent<PositionComponent>(62, 148);
 	hand_card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[0].c1.get_suit_int(), players[0].c1.get_rank() - 2);
-	hand_card2.addComponent<PositionComponent>(112, 148);
+	hand_card2.addComponent<PositionComponent>(62 + card_spacing, 148);
 	hand_card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[0].c2.get_suit_int(), players[0].c2.get_rank() - 2);
 
 	back_card.addComponent<PositionComponent>(12, card_y);
@@ -115,7 +140,33 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	enemy_card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
 	enemy_card2.addComponent<PositionComponent>(192 + card_spacing, 10);
 	enemy_card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
-	
+
+	//Bet button 
+	BB_sub_big.addComponent<PositionComponent>(132, 152);
+	BB_sub_big.addComponent<SpriteComponent>("assets/Bet_button_sub_big.png", 10, 27);
+	BB_sub_big.addComponent<MouseController>();
+
+	BB_sub_small.addComponent<PositionComponent>(142, 152);
+	BB_sub_small.addComponent<SpriteComponent>("assets/Bet_button_sub_small.png", 10, 27);
+	BB_sub_small.addComponent<MouseController>();
+
+	BB_center.addComponent<PositionComponent>(152, 152);
+	BB_center.addComponent<SpriteComponent>("assets/Bet_button_center.png", 34, 27);
+	BB_center.addComponent<MouseController>();
+
+
+	BB_add_small.addComponent<PositionComponent>(186, 152);
+	BB_add_small.addComponent<SpriteComponent>("assets/Bet_button_add_small.png", 10, 27);
+	BB_add_small.addComponent<MouseController>();
+
+	BB_add_big.addComponent<PositionComponent>(196, 152);
+	BB_add_big.addComponent<SpriteComponent>("assets/Bet_button_add_big.png", 10, 27);
+	BB_add_big.addComponent<MouseController>();
+
+	money_text.addComponent<PositionComponent>(155, 157);
+	money_text.addComponent<TextComponent>("assets/font.ttf", 13, std::to_string(0), red);
+	money_text.getComponent<TextComponent>().setNum(&bet);
+	cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 }
 
 void Game::handleEvents()
@@ -144,7 +195,17 @@ void Game::update()
 
 	cnt++;
 	//Showing deck on screen
+	
 	if (cnt == 1200) {
+		if (bigblind[0]) {
+			money[0] -= 10;
+			money[1] -= 5;
+			pool += 15;
+		}
+		money[0] -= 20;
+		money[1] -= 20;
+		pool += 40;
+		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 		card1.addComponent<PositionComponent>(card_x, card_y);
 		card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[0].get_suit_int(), table[0].get_rank() - 2);
 
@@ -157,10 +218,18 @@ void Game::update()
 		cout << scores[0].handRank << " Drugi gracz: " << scores[1].handRank << endl;
 	}
 	if (cnt >= 1200 && Game::event.type == SDL_MOUSEBUTTONDOWN) {
+		money[0] -= 20;
+		money[1] -= 20;
+		pool += 40;
+		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 		card4.addComponent<PositionComponent>(card_x + card_spacing * 3, card_y);
 		card4.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[3].get_suit_int(), table[3].get_rank() - 2);
 	}
 	if (cnt >= 1500 && Game::event.type == SDL_MOUSEBUTTONDOWN) {
+		money[0] -= 20;
+		money[1] -= 20;
+		pool += 40;
+		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 		card5.addComponent<PositionComponent>(card_x + card_spacing * 4, card_y);
 		card5.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[4].get_suit_int(), table[4].get_rank() - 2);
 
@@ -177,20 +246,76 @@ void Game::update()
 			cout << "Next player: " << endl;
 		}
 		Result(scores, hands);
+		cout << scores[0].score << "  " << scores[1].score << endl;
+		if (scores[0].score < scores[1].score) {
+			cout << "Player Won!" << endl;
+			money[0] += pool;
+		}
+		else if (scores[0].score > scores[1].score) {
+			cout << "Enemy Won!" << endl;
+			money[1] += pool;
+		}
+		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
+		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 	}
 	
 	
+	if (BB_add_big.getComponent<MouseController>().down) {
+		BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big_c.png");
+		if (event.type == SDL_MOUSEBUTTONUP) {
+			BB_add_big.getComponent<MouseController>().down = false;
+			BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big.png");
+			bet += 10;
+		}
+	}
+
+
+	if (BB_add_small.getComponent<MouseController>().down) {
+		BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small_c.png");
+		if (event.type == SDL_MOUSEBUTTONUP) {
+			BB_add_small.getComponent<MouseController>().down = false;
+			BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small.png");
+			bet += 1;
+		}
+	}
 	
 
+	if (BB_sub_big.getComponent<MouseController>().down) {
+		BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big_c.png");
+		if (event.type == SDL_MOUSEBUTTONUP) {
+			BB_sub_big.getComponent<MouseController>().down = false;
+			BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big.png");
+			bet -= 10;
+		}
+	}
+	
+
+	if (BB_sub_small.getComponent<MouseController>().down) {
+		BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small_c.png");
+		if (event.type == SDL_MOUSEBUTTONUP) {
+			BB_sub_small.getComponent<MouseController>().down = false;
+			BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small.png");
+			bet -= 1;
+		}
+	}
+	if (BB_center.getComponent<MouseController>().down) {
+		BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center_c.png");
+		if (event.type == SDL_MOUSEBUTTONUP) {
+			BB_center.getComponent<MouseController>().down = false;
+			BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center.png");
+			bet = 0;
+		}
+	}
+	
 	
 	//SPRITE DRAGGING
 
-	if (cowboy.getComponent<MouseController>().clicked) {
+	if (cowboy.getComponent<MouseController>().down) {
 		SDL_GetMouseState(&x, &y);
 		cowboy.getComponent<PositionComponent>().x(x/r_scale- 30);
 		cowboy.getComponent<PositionComponent>().y(y / r_scale - 30);
 		if (event.type == SDL_MOUSEBUTTONUP) {
-			cowboy.getComponent<MouseController>().clicked = false;
+			cowboy.getComponent<MouseController>().down = false;
 		}	
 	}
 }

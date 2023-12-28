@@ -98,38 +98,33 @@ int SameRanks(const vector<Card>& cards, Score& s) {
 	int score = s.score;
 	int index = 0;
 	int cnt;
-	while (cards[index] != cards[6]) {
-		cnt = 1;
-		//check in a sorted vector if the next element is the same as the index element else move index to the next element
-		for (int i = index; i < cards.size() - 1; i++) {
-			if (cards[index] == cards[i + 1]) {
-				cnt++;
-				continue;
-			}
-			index = i + 1;
-			break;
-		}
-		if (cnt == 3) {
+	for (size_t i = 0; i <= cards.size() - 3; ++i) {
+		if (cards[i] == cards[i + 1] && cards[i + 1] == cards[i + 2]) {
+			// Three of kind found
+			s.threeRank = cards[i].get_rank();
 			score = min(score, 7);//three of kind
-			int cnt_fh = 1;
+
 			//check if the cards also contains a pair making it a "full house"
-			for (int i = 0; i < cards.size() - 1; i++) {
-				if (cards[i] == cards[index - 1]) {
+			for (const Card& card : cards) {
+				if (card.get_rank() == s.threeRank) { //Skip loop 
 					continue;
 				}
-				if (cards[i] == cards[i + 1]) {
-					cnt_fh++;
-				}
-			}
-			if (!ignoreHand[3]) {
-				if (cnt_fh >= 2) {
-					score = min(score, 4); //full house
-				}
-			}
+				else {
+					// Count occurrences of cards with the same rank
+					int count = count_if(cards.begin(), cards.end(), [&](const Card& c) {
+						return c.get_rank() == card.get_rank();
+						});
 
+					if (count >= 2) {
+						score = min(score, 4); //full house
+						s.pairRank = card.get_rank();
+					}
+				}
+
+			}
 		}
-		return score;
 	}
+	return score;
 }
 
 int Straight(const vector<Card>& cards, Score& s) {
@@ -290,7 +285,7 @@ void Result(vector<Score>& s, vector<vector<Card>>& hands) {
 		cout << "Player Won!" << endl;
 	}
 	else if (s[0].score > s[1].score) {
-		cout << "Enemy Won!" << endl;
+		cout << "Enemy Won!" << endl;	
 	}
 	else {
 		Compare(s, hands);

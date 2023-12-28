@@ -8,7 +8,8 @@ class MouseController : public Component {
 public:
 	SpriteComponent* sprite;
 	int x, y;
-	bool clicked = false;
+	bool down = false;
+	bool up = false;
 	void init() override
 	{
 		sprite = &entity->getComponent<SpriteComponent>();
@@ -22,7 +23,7 @@ public:
 			y /= r_scale;
 			if (x >= sprite->x() && x <= (sprite->x() + sprite->w()) && y >= sprite->y() && y <= (sprite->y() + sprite->h())) { //checking if the coursor location is within the sprite area
 				cout << x << "  " << y << endl;
-				clicked = true;
+				down = true;
 			}
 			
 
