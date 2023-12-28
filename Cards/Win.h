@@ -285,7 +285,7 @@ void Result(vector<Score>& s, vector<vector<Card>>& hands) {
 		cout << "Player Won!" << endl;
 	}
 	else if (s[0].score > s[1].score) {
-		cout << "Enemy Won!" << endl;	
+		cout << "Enemy Won!" << endl;
 	}
 	else {
 		Compare(s, hands);

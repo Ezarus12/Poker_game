@@ -30,6 +30,7 @@ public:
 	};
 
 	SDL_Texture* loadFont(const std::string& font_path, int font_size, const std::string& message, const SDL_Color& color) {
+		message_ = message;
 		TTF_Font* font = TTF_OpenFont(font_path.c_str(), font_size);
 		if (!font) {
 			cout << "Failed to load a font" << endl;
@@ -61,7 +62,7 @@ public:
 	{
 		text_rect.x = position->x();
 		text_rect.y = position->y();
-		if (1) {
+		if (*num != std::stoi(message_)) {
 			text_texture = loadFont(font_path_, font_size_, std::to_string(*num), color_);
 			SDL_QueryTexture(text_texture, nullptr, nullptr, &text_rect.w, &text_rect.h);
 		}

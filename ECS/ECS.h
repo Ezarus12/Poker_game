@@ -99,6 +99,7 @@ public:
 		for (auto& e : entities) {
 			e->update();
 		}
+		refresh();
 	}
 	void draw()
 	{
@@ -122,5 +123,4 @@ public:
 
 		return *e;
 	}
-
 };

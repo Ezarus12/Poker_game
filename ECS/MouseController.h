@@ -22,7 +22,6 @@ public:
 			x /= r_scale;
 			y /= r_scale;
 			if (x >= sprite->x() && x <= (sprite->x() + sprite->w()) && y >= sprite->y() && y <= (sprite->y() + sprite->h())) { //checking if the coursor location is within the sprite area
-				cout << x << "  " << y << endl;
 				down = true;
 			}
 			
