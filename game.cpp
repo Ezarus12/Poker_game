@@ -50,7 +50,7 @@ int money[2] = {100, 100};
 
 int currentBet[2] = { 0,0 };
 
-bool bigblind[players_num] = { true, false };
+int bigblind;
 
 int pool = 0;
 
@@ -130,6 +130,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	//scores_test.push_back(*s);
 	//win(cards_test, scores_test[0]);
 	//score(scores_test[0]);
+
+	bigblind = Random(0, 1);
 
 	//ECS 
 
@@ -211,10 +213,7 @@ void Game::handleEvents()
 
 int cnt = 0;
 
-bool ding = true;
-bool ding1 = true;
-bool ding2 = true;
-bool ding3 = true;
+int Show3Cards = 0;
 bool ding4 = true;
 bool ding5 = true;
 bool ding6 = true;
@@ -232,8 +231,9 @@ bool ding17 = true;
 
 bool game_ended = false;
 
+int currentBB = 10; //current Big Blind value
 
-void HandleButtons() {
+void HandleBetButtons() {
 
 	if (BB_center.getComponent<MouseController>().down) {
 		BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center_c.png");
@@ -242,9 +242,11 @@ void HandleButtons() {
 			BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center.png");
 			pool += bet;
 			money[0] -= bet;
-			currentBet[0] = bet;
+			currentBet[0] += bet;
 			bet = 0;
-			ding2 = false;
+			if (Show3Cards == 0) {
+				Show3Cards = 1;
+			}
 			if (!ding4) {
 				ding5 = false;
 			}
@@ -296,85 +298,76 @@ void HandleButtons() {
 	if (BB_sub_small.getComponent<MouseController>().down) {
 		BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			int lowestBet = bet;
 			BB_sub_small.getComponent<MouseController>().down = false;
 			BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small.png");
-			if (bet > 0) {
+			if (bet > lowestBet) {
 				bet -= 1;
 			}
 		}
 	}
 }
 
+void Blinds(int BigBlind) {
+	switch (BigBlind) {
+		case 0: //Player got the Big Blind
+			money[0] -= currentBB;
+			currentBet[0] = currentBB;
+			money[1] -= currentBB/2;
+			currentBet[1] = currentBB/2;
+			for (int i = 0; i < players_num; i++) {
+				pool += currentBet[i];
+			}
+			break;
+		case 1: //Enemy got the Big Blind
+			money[1] -= currentBB;
+			currentBet[1] = currentBB;
+			money[0] -= currentBB / 2;
+			currentBet[0] = currentBB / 2;
+			for (int i = 0; i < players_num; i++) {
+				pool += currentBet[i];
+			}
+			bet = currentBet[1] - currentBet[0];
+			break;
+	}
+
+}
 
 void Game::update()
 {
 	manager.update();
-	
-	
-	if(ding){
+	if (!start_game) {
 		if (Start_button.getComponent<MouseController>().down) {
 			Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button_c.png");
 			if (event.type == SDL_MOUSEBUTTONUP) {
 				Start_button.getComponent<MouseController>().down = false;
 				Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button.png");
 				start_game = true;
-				ding = false;
 				Start_button.destroy();
-
+				Blinds(bigblind);
 			}
 		}
-	}
-	if (!start_game) {
+		
 		return;
 	}
 
-	cnt++;
-
-	//Big and small blinds
-	if (ding1) {
-		if (bigblind[0]) {
-			money[0] -= 10;
-			currentBet[0] = 10;
-			money[1] -= 5;
-			currentBet[1] = 5;
-			pool += 15;
-		}
-		ding1 = false;
-	}
-
-	//Enemy move
-	while (currentBet[0] != currentBet[1]) {
-		money[1]--;
-		currentBet[1]++;
-		pool++;
-	}
-
-	if (ding8) {
-		currentBet[0] = 0;
-		currentBet[1] = 0;
-		ding8 = false;
-	}
 	if (!game_ended) {
-		HandleButtons();
+		HandleBetButtons();
 	}
-
-	//Enemy move
-	while (currentBet[0] != currentBet[1]) {
-		money[1]--;
-		currentBet[1]++;
-		pool++;
+	if (!bigblind) {
+		//Enemy move
+		while (currentBet[0] != currentBet[1]) {
+			money[1]--;
+			currentBet[1]++;
+			pool++;
+		}
 	}
-
-	if (ding2) {
-		return;
-	}	
 
 	//Displaying first 3 cards
-	if (ding3) {
-
+	if (Show3Cards == 1) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
-		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
+		cout << "3cards" << endl;
 		card1.addComponent<PositionComponent>(card_x, card_y);
 		card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[0].get_suit_int(), table[0].get_rank() - 2);
 
@@ -384,17 +377,28 @@ void Game::update()
 		card3.addComponent<PositionComponent>(card_x + card_spacing * 2, card_y);
 		card3.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[2].get_suit_int(), table[2].get_rank() - 2);
 
-		cout << scores[0].handRank << " Drugi gracz: " << scores[1].handRank << endl;
-		ding3 = false;
+		Show3Cards = 2;
 		ding4 = false;
 	}
+	
+	if (ding4) {
+		return;
+	}
+
+	//Enemy move
+	while (currentBet[0] != currentBet[1]) {
+		money[1]--;
+		currentBet[1]++;
+		pool++;
+	}
+
+	
 	if (ding5) {
 		return;
 	}
 
 	//Enemy move
 	while (currentBet[0] != currentBet[1]) {
-		cout << "wchodze";
 		money[1]--;
 		currentBet[1]++;
 		pool++;
@@ -408,7 +412,7 @@ void Game::update()
 	if (ding7) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
-		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
+		cout << "4 card" << endl;
 		card4.addComponent<PositionComponent>(card_x + card_spacing * 3, card_y);
 		card4.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[3].get_suit_int(), table[3].get_rank() - 2);
 		ding7 = false;
@@ -419,7 +423,6 @@ void Game::update()
 	}
 
 	while (currentBet[0] != currentBet[1]) {
-		cout << "wchodze";
 		money[1]--;
 		currentBet[1]++;
 		pool++;
@@ -430,7 +433,9 @@ void Game::update()
 		return;
 
 	if (ding10) {
-		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
+		currentBet[0] = 0;
+		currentBet[1] = 0;
+		cout << "5 card" << endl;
 		card5.addComponent<PositionComponent>(card_x + card_spacing * 4, card_y);
 		card5.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[4].get_suit_int(), table[4].get_rank() - 2);
 		ding10 = false;
@@ -440,14 +445,12 @@ void Game::update()
 		return;
 
 	if (ding16) {
+		currentBet[0] = 0;
+		currentBet[1] = 0;
 		enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
 		enemy_card2.getComponent<SpriteComponent>().changeSprite(players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
 		for (int i = 0; i < players_num; i++) {
 			hands.push_back(combine(table, players, i));
-			for (int j = 0; j < 7; j++) {
-				cout << hands[i][j] << endl;;
-			}
-			cout << "Next player: " << endl;
 		}
 		Result(scores, hands);
 		cout << scores[0].score << "  " << scores[1].score << endl;
@@ -467,12 +470,6 @@ void Game::update()
 	}
 	if (ding17) {
 		return;
-	}
-	while (currentBet[0] != currentBet[1]) {
-		cout << "wchodze";
-		money[1]--;
-		currentBet[1]++;
-		pool++;
 	}
 	
 	
