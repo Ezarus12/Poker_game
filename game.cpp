@@ -228,8 +228,83 @@ bool ding13 = true;
 bool ding14 = true;
 bool ding15 = true;
 bool ding16 = true;
+bool ding17 = true;
 
 bool game_ended = false;
+
+
+void HandleButtons() {
+
+	if (BB_center.getComponent<MouseController>().down) {
+		BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center_c.png");
+		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			BB_center.getComponent<MouseController>().down = false;
+			BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center.png");
+			pool += bet;
+			money[0] -= bet;
+			currentBet[0] = bet;
+			bet = 0;
+			ding2 = false;
+			if (!ding4) {
+				ding5 = false;
+			}
+			if (!ding12) {
+				ding13 = false;
+			}
+			if (!ding14) {
+				ding15 = false;
+			}
+		}
+	}
+
+	if (BB_add_big.getComponent<MouseController>().down) {
+		BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big_c.png");
+		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			BB_add_big.getComponent<MouseController>().down = false;
+			BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big.png");
+			if (bet <= 989) {
+				bet += 10;
+			}
+		}
+	}
+
+
+	if (BB_add_small.getComponent<MouseController>().down) {
+		BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small_c.png");
+		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			BB_add_small.getComponent<MouseController>().down = false;
+			BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small.png");
+			if (bet <= 998) {
+				bet += 1;
+			}
+		}
+	}
+
+
+	if (BB_sub_big.getComponent<MouseController>().down) {
+		BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big_c.png");
+		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			BB_sub_big.getComponent<MouseController>().down = false;
+			BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big.png");
+			if (bet >= 10) {
+				bet -= 10;
+			}
+		}
+	}
+
+
+	if (BB_sub_small.getComponent<MouseController>().down) {
+		BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small_c.png");
+		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			BB_sub_small.getComponent<MouseController>().down = false;
+			BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small.png");
+			if (bet > 0) {
+				bet -= 1;
+			}
+		}
+	}
+}
+
 
 void Game::update()
 {
@@ -280,74 +355,7 @@ void Game::update()
 		ding8 = false;
 	}
 	if (!game_ended) {
-		if (BB_center.getComponent<MouseController>().down) {
-			BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center_c.png");
-			if (event.type == SDL_MOUSEBUTTONUP) {
-				BB_center.getComponent<MouseController>().down = false;
-				BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center.png");
-				pool += bet;
-				money[0] -= bet;
-				currentBet[0] = bet;
-				bet = 0;
-				ding2 = false;
-				if (!ding4) {
-				ding5 = false;
-				}
-				if (!ding12) {
-					ding13 = false;
-				}
-				if (!ding14) {
-					ding15 = false;
-				}
-			}
-		}
-	
-		if (BB_add_big.getComponent<MouseController>().down) {
-			BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big_c.png");
-			if (event.type == SDL_MOUSEBUTTONUP) {
-				BB_add_big.getComponent<MouseController>().down = false;
-				BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big.png");
-				if (bet <= 989) {
-					bet += 10;
-				}
-			}
-		}
-
-
-		if (BB_add_small.getComponent<MouseController>().down) {
-			BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small_c.png");
-			if (event.type == SDL_MOUSEBUTTONUP) {
-				BB_add_small.getComponent<MouseController>().down = false;
-				BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small.png");
-				if (bet <= 998) {
-					bet += 1;
-				}
-			}
-		}
-
-
-		if (BB_sub_big.getComponent<MouseController>().down) {
-			BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big_c.png");
-			if (event.type == SDL_MOUSEBUTTONUP) {
-				BB_sub_big.getComponent<MouseController>().down = false;
-				BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big.png");
-				if (bet >= 10) {
-					bet -= 10;
-				}
-			}
-		}
-
-
-		if (BB_sub_small.getComponent<MouseController>().down) {
-			BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small_c.png");
-			if (event.type == SDL_MOUSEBUTTONUP) {
-				BB_sub_small.getComponent<MouseController>().down = false;
-				BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small.png");
-				if (bet > 0) {
-					bet -= 1;
-				}
-			}
-		}
+		HandleButtons();
 	}
 
 	//Enemy move
@@ -455,9 +463,17 @@ void Game::update()
 		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 		ding16 = false;
 		game_ended = true;
+		ding17 = false;
 	}
-
-
+	if (ding17) {
+		return;
+	}
+	while (currentBet[0] != currentBet[1]) {
+		cout << "wchodze";
+		money[1]--;
+		currentBet[1]++;
+		pool++;
+	}
 	
 	
 	
