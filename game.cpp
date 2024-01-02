@@ -62,6 +62,7 @@ auto& money_text(manager.addEntity());
 auto& bet_text(manager.addEntity());
 auto& pool_text(manager.addEntity());
 
+auto& BigBlind(manager.addEntity());
 bool start_game = false;
 
 Game::Game()
@@ -189,6 +190,13 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	Start_button.addComponent<PositionComponent>(97, 66);
 	Start_button.addComponent<SpriteComponent>("assets/Start_button.png", 126, 48);
 	Start_button.addComponent<MouseController>();
+
+	BigBlind.addComponent<PositionComponent>(242, 134);
+	BigBlind.addComponent<SpriteComponent>("assets/BigBlindSpriteSheet.png", 16, 16, 1, 0);
+	BigBlind.addComponent<MouseController>();
+
+	BigBlind.getComponent<MouseController>().setHover();
+	
 
 	cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 }
@@ -333,8 +341,42 @@ void Blinds(int BigBlind) {
 
 }
 
+int s = 0;
+bool row = true; //change row in bigblind animation
+
+bool stop = false; // stop bigblind animation
+
 void Game::update()
 {
+
+	//scrolling through deck
+	cnt++;
+	if (!stop) {
+		if (cnt % 50 == 0) {
+			if (row) {
+				BigBlind.getComponent<SpriteComponent>().changeSprite(s, 0);
+			}
+			else {
+				BigBlind.getComponent<SpriteComponent>().changeSprite(s, 1);
+			}
+
+			s++;
+			if (s == 9 && !row) {
+				stop = true;
+			}
+			if (s >= 9) {
+				s = 0;
+				row = !row;
+			}
+		}
+	}
+
+	if (BigBlind.getComponent<MouseController>().hovered) {
+		cout << "yes\n";
+	}
+
+
+
 	manager.update();
 	if (!start_game) {
 		if (Start_button.getComponent<MouseController>().down) {

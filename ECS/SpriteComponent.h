@@ -60,15 +60,6 @@ public:
 
 	void update() override
 	{
-		//scrolling through deck
-	/*	cnt++;
-		if (cnt % 300 == 0) {
-			src_x++;
-			if (src_x == 4) {
-				src_x = 0;
-				src_y++;
-			}
-		}*/
 		srcRect.y = height * src_y;
 		srcRect.x = width * src_x;
 
