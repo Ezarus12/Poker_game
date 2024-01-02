@@ -5,8 +5,8 @@
 class PositionComponent : public Component
 {
 private:
-	int xpos;
-	int ypos;
+	float xpos;
+	float ypos;
 
 public:
 
@@ -24,8 +24,8 @@ public:
 		//xpos++;
 	}
 
-	int x() { return xpos; }
-	int y() { return ypos; }
+	float x() { return xpos; }
+	float y() { return ypos; }
 
 	void x(int x) { xpos = x; }
 	void y(int y) { ypos = y; }

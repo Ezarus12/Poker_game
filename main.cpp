@@ -11,7 +11,8 @@ int main(int argc, char* args[])
 	const int frameDelay = 1000 / FPS;
 
 	Uint32 frameStart;
-	int frameTime;
+	int frameTime = 0;
+	float deltaTime = 1.0f / 60.0f;
 
 	game = new Game();
 
@@ -22,14 +23,16 @@ int main(int argc, char* args[])
 		frameStart = SDL_GetTicks();
 
 		game->handleEvents();
-		game->update();
+		game->update(deltaTime);
 		game->render();
 
+		
 		frameTime = SDL_GetTicks() - frameStart;
 
 		if (frameDelay > frameTime) {
 			SDL_Delay(frameDelay - frameTime);
 		}
+		deltaTime = (SDL_GetTicks() - frameStart) / 1000.f;
 	}
 
 	game->clean();

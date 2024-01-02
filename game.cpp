@@ -208,12 +208,6 @@ void Game::handleEvents()
 		case SDL_QUIT:
 			isRunning = false;
 			break;
-		case SDL_MOUSEBUTTONDOWN:
-			SDL_GetMouseState(&x, &y);
-			//cout << "Clicked";
-			break;
-		case SDL_MOUSEMOTION:
-			SDL_GetMouseState(&x, &y);
 		default:
 			break;
 	}
@@ -341,30 +335,29 @@ void Blinds(int BigBlind) {
 
 }
 
-int s = 0;
+float s = 0;
 bool row = true; //change row in bigblind animation
 
 bool stop = false; // stop bigblind animation
 
-void Game::update()
+void Game::update(float deltaTime)
 {
-
 	//scrolling through deck
-	cnt++;
 	if (!stop) {
-		if (cnt % 50 == 0) {
-			if (row) {
-				BigBlind.getComponent<SpriteComponent>().changeSprite(s, 0);
+		if (1) {
+			if (row) { 
+				BigBlind.getComponent<SpriteComponent>().changeSprite(int(s), 0);
 			}
 			else {
-				BigBlind.getComponent<SpriteComponent>().changeSprite(s, 1);
+				BigBlind.getComponent<SpriteComponent>().changeSprite(int(s), 1);
 			}
 
-			s++;
-			if (s == 9 && !row) {
+			s += deltaTime * 20;
+			cout << s << endl;
+			if (int(s) == 9 && !row) {
 				stop = true;
 			}
-			if (s >= 9) {
+			if (int(s) >= 9) {
 				s = 0;
 				row = !row;
 			}
@@ -522,8 +515,8 @@ void Game::update()
 
 	if (cowboy.getComponent<MouseController>().down) {
 		SDL_GetMouseState(&x, &y);
-		cowboy.getComponent<PositionComponent>().x(x / r_scale - 30);
-		cowboy.getComponent<PositionComponent>().y(y / r_scale - 30);
+		cowboy.getComponent<PositionComponent>().x((x / r_scale - 30));
+		cowboy.getComponent<PositionComponent>().y((y / r_scale - 30));
 		if (event.type == SDL_MOUSEBUTTONUP) {
 			cowboy.getComponent<MouseController>().down = false;
 		}
