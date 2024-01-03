@@ -63,6 +63,11 @@ auto& bet_text(manager.addEntity());
 auto& pool_text(manager.addEntity());
 
 auto& BigBlind(manager.addEntity());
+auto& BigBlindNote(manager.addEntity());
+
+auto& SmallBlind(manager.addEntity());
+auto& SmallBlindNote(manager.addEntity());
+
 bool start_game = false;
 
 Game::Game()
@@ -138,8 +143,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 	hand_card1.addComponent<PositionComponent>(62, 148);
 	hand_card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[0].c1.get_suit_int(), players[0].c1.get_rank() - 2);
+	hand_card1.addComponent<MouseController>();
+	hand_card1.getComponent<MouseController>().setHover();
+
+
 	hand_card2.addComponent<PositionComponent>(62 + card_spacing, 148);
 	hand_card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[0].c2.get_suit_int(), players[0].c2.get_rank() - 2);
+	hand_card2.addComponent<MouseController>();
+	hand_card2.getComponent<MouseController>().setHover();
+
 
 	back_card.addComponent<PositionComponent>(12, card_y);
 	back_card.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
@@ -175,8 +187,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	BB_add_big.addComponent<SpriteComponent>("assets/Bet_button_add_big.png", 10, 27);
 	BB_add_big.addComponent<MouseController>();
 
-	money_text.addComponent<PositionComponent>(10, 20);
-	money_text.addComponent<TextComponent>("assets/font.ttf", 13, std::to_string(0), red);
+	money_text.addComponent<PositionComponent>(16, 7);
+	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
 	money_text.getComponent<TextComponent>().setNum(&money[0]);
 
 	bet_text.addComponent<PositionComponent>(155, 157);
@@ -190,12 +202,35 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	Start_button.addComponent<PositionComponent>(97, 66);
 	Start_button.addComponent<SpriteComponent>("assets/Start_button.png", 126, 48);
 	Start_button.addComponent<MouseController>();
-
-	BigBlind.addComponent<PositionComponent>(242, 134);
-	BigBlind.addComponent<SpriteComponent>("assets/BigBlindSpriteSheet.png", 16, 16, 1, 0);
+	if (bigblind) 
+	{
+		BigBlind.addComponent<PositionComponent>(122, 1);
+		BigBlindNote.addComponent<PositionComponent>(139, 3);
+		SmallBlindNote.addComponent<PositionComponent>(190, 136);
+		SmallBlind.addComponent<PositionComponent>(242, 134);
+	}
+	else
+	{
+		BigBlind.addComponent<PositionComponent>(242, 134);
+		BigBlindNote.addComponent<PositionComponent>(200, 136);
+		SmallBlindNote.addComponent<PositionComponent>(139, 3);
+		SmallBlind.addComponent<PositionComponent>(122, 1);
+	}
+	
+	BigBlind.addComponent<SpriteComponent>("assets/BigBlindSpriteSheet.png", 16, 16);
 	BigBlind.addComponent<MouseController>();
-
 	BigBlind.getComponent<MouseController>().setHover();
+
+	
+	SmallBlind.addComponent<SpriteComponent>("assets/SmallBlindSpriteSheet.png", 16, 16);
+	SmallBlind.addComponent<MouseController>();
+	SmallBlind.getComponent<MouseController>().setHover();
+	
+	BigBlindNote.addComponent<SpriteComponent>("assets/BigBlindNote.png", 42, 12);
+	BigBlindNote.getComponent<SpriteComponent>().hidden();
+
+	SmallBlindNote.addComponent<SpriteComponent>("assets/SmallBlindNote.png", 51, 12);
+	SmallBlindNote.getComponent<SpriteComponent>().hidden();
 	
 
 	cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
@@ -208,6 +243,30 @@ void Game::handleEvents()
 		case SDL_QUIT:
 			isRunning = false;
 			break;
+		case SDL_MOUSEWHEEL:
+				if (event.wheel.y > 0) // scroll up
+				{
+					cout << "Gora\n";
+					int y = cowboy.getComponent<PositionComponent>().y() - 1;
+					cowboy.getComponent<PositionComponent>().y(y);
+					// Put code for handling "scroll up" here!
+				}
+				else if (event.wheel.y < 0) // scroll down
+				{
+					cout << "Dol\n";
+					int y = cowboy.getComponent<PositionComponent>().y() + 1;
+					cowboy.getComponent<PositionComponent>().y(y);
+					// Put code for handling "scroll down" here!
+				}
+
+				if (event.wheel.x > 0) // scroll right
+				{
+					// ...
+				}
+				else if (event.wheel.x < 0) // scroll left
+				{
+					// ...
+				}
 		default:
 			break;
 	}
@@ -340,6 +399,12 @@ bool row = true; //change row in bigblind animation
 
 bool stop = false; // stop bigblind animation
 
+bool note = false;
+
+float h1 = 148;
+
+float h2 = 148;
+
 void Game::update(float deltaTime)
 {
 	//scrolling through deck
@@ -347,12 +412,14 @@ void Game::update(float deltaTime)
 		if (1) {
 			if (row) { 
 				BigBlind.getComponent<SpriteComponent>().changeSprite(int(s), 0);
+				SmallBlind.getComponent<SpriteComponent>().changeSprite(int(s), 0);
 			}
 			else {
 				BigBlind.getComponent<SpriteComponent>().changeSprite(int(s), 1);
+				SmallBlind.getComponent<SpriteComponent>().changeSprite(int(s), 1);
 			}
 
-			s += deltaTime * 20;
+			s += deltaTime * 17;
 			cout << s << endl;
 			if (int(s) == 9 && !row) {
 				stop = true;
@@ -364,8 +431,53 @@ void Game::update(float deltaTime)
 		}
 	}
 
+	if (hand_card1.getComponent<MouseController>().hovered) {
+		if (h1 >= 133) {
+			h1 -= deltaTime*60;
+		}
+		hand_card1.getComponent<PositionComponent>().y(int(h1));
+	}
+	else {
+		if (h1 < 148) {
+			h1 += deltaTime * 60;
+		}
+		hand_card1.getComponent<PositionComponent>().y(int(h1));
+	}
+
+	if (hand_card2.getComponent<MouseController>().hovered) {
+		if (h2 >= 133) {
+			h2 -= deltaTime * 60;
+		}
+		else {
+			h1 = 148;
+		}
+		hand_card2.getComponent<PositionComponent>().y(int(h2));
+	}
+	else {
+		if (h2 < 148) {
+			h2 += deltaTime * 60;
+		}
+		else {
+			h2 = 148;
+		}
+		hand_card2.getComponent<PositionComponent>().y(int(h2));
+		
+	}
+
 	if (BigBlind.getComponent<MouseController>().hovered) {
-		cout << "yes\n";
+		BigBlindNote.getComponent<SpriteComponent>().shown();
+		
+	}
+	else {
+		BigBlindNote.getComponent<SpriteComponent>().hidden();
+	}
+
+	if (SmallBlind.getComponent<MouseController>().hovered) {
+		SmallBlindNote.getComponent<SpriteComponent>().shown();
+
+	}
+	else {
+		SmallBlindNote.getComponent<SpriteComponent>().hidden();
 	}
 
 

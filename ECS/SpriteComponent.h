@@ -12,6 +12,8 @@ private:
 	int width;
 	int height;
 
+	bool show = true;
+
 	int src_x = 0;
 	int src_y = 0;
 
@@ -44,6 +46,14 @@ public:
 		src_y = src_y_;
 	}
 
+	void hidden() {
+		show = false;
+	}
+
+	void shown() {
+		show = true;
+	}
+
 	void init() override
 	{
 		position = &entity->getComponent<PositionComponent>();
@@ -69,7 +79,10 @@ public:
 
 	void draw() override
 	{
-		TextureManager::Draw(texture, srcRect, destRect);
+		if (show) {
+			TextureManager::Draw(texture, srcRect, destRect);
+		}
+		
 	}
 
 	int x() { return position->x(); }
