@@ -35,10 +35,10 @@ auto& BB_sub_small(manager.addEntity());
 auto& BB_add_big(manager.addEntity());
 auto& BB_add_small(manager.addEntity());
 
-//Start button
-auto& Start_button(manager.addEntity());
 
-vector<Card> table;
+vector<Card> Deck;  //Deck containg all 52 cards
+
+vector<Card> table;  //set of 5 cards on the table
 
 vector<Hand> players; //vector storing hands for all of the player and the enemies (main player == player[0]);
 
@@ -68,6 +68,10 @@ auto& BigBlindNote(manager.addEntity());
 auto& SmallBlind(manager.addEntity());
 auto& SmallBlindNote(manager.addEntity());
 
+//Start button
+auto& Start_button(manager.addEntity());
+
+
 bool start_game = false;
 
 Game::Game()
@@ -75,6 +79,7 @@ Game::Game()
 
 Game::~Game()
 {}
+
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
@@ -111,7 +116,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	}
 
 	//Create Deck
-	vector<Card> Deck;
 	fill_deck(Deck);
 	//Draw hands and create score for each of the players
 	for (int i = 0; i < players_num; i++) {
@@ -128,6 +132,11 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		table.push_back(Deck[r]);
 		Deck.erase(Deck.begin() + r);
 	}
+
+	
+
+	
+
 
 	////TEST!!!!!!
 	//vector<Card> cards_test = { Card(5,'D'),Card(5,'H'),Card(6,'C'),Card(8,'S'),Card(14,'D'),Card(14,'H'),Card(14,'S') };
@@ -157,7 +166,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	back_card.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
 
 	cowboy.addComponent<PositionComponent>(60, 0);
-	cowboy.addComponent<SpriteComponent>("assets/cowboy.png", 60, 60);
+	cowboy.addComponent<SpriteComponent>("assets/Cowboy_Sheet.png", 60, 60);
 	cowboy.addComponent<MouseController>();
 
 	enemy_card1.addComponent<PositionComponent>(192, 10);
@@ -195,26 +204,27 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	bet_text.addComponent<TextComponent>("assets/font.ttf", 13, std::to_string(0), red);
 	bet_text.getComponent<TextComponent>().setNum(&bet);
 
-	pool_text.addComponent<PositionComponent>(150, 20);
-	pool_text.addComponent<TextComponent>("assets/font.ttf", 13, std::to_string(0), red);
+	pool_text.addComponent<PositionComponent>(132, 24);
+	pool_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
 	pool_text.getComponent<TextComponent>().setNum(&pool);
 
 	Start_button.addComponent<PositionComponent>(97, 66);
 	Start_button.addComponent<SpriteComponent>("assets/Start_button.png", 126, 48);
 	Start_button.addComponent<MouseController>();
+
 	if (bigblind) 
 	{
-		BigBlind.addComponent<PositionComponent>(122, 1);
+		BigBlind.addComponent<PositionComponent>(160, 90);
 		BigBlindNote.addComponent<PositionComponent>(139, 3);
 		SmallBlindNote.addComponent<PositionComponent>(190, 136);
-		SmallBlind.addComponent<PositionComponent>(242, 134);
+		SmallBlind.addComponent<PositionComponent>(160, 90);
 	}
 	else
 	{
-		BigBlind.addComponent<PositionComponent>(242, 134);
+		BigBlind.addComponent<PositionComponent>(160, 90);
 		BigBlindNote.addComponent<PositionComponent>(200, 136);
 		SmallBlindNote.addComponent<PositionComponent>(139, 3);
-		SmallBlind.addComponent<PositionComponent>(122, 1);
+		SmallBlind.addComponent<PositionComponent>(160, 90);
 	}
 	
 	BigBlind.addComponent<SpriteComponent>("assets/BigBlindSpriteSheet.png", 16, 16);
@@ -272,6 +282,49 @@ void Game::handleEvents()
 	}
 }
 
+
+void DrawHands(vector<Card> &Deck) {
+	for (int i = 0; i < players_num; i++) {
+		players[i] = (draw(Deck));
+		scores[i].handRank = max(players[i].c1.get_rank(), players[i].c2.get_rank()); //Find highest card in hand
+	}
+}
+
+void DrawTable(vector<Card> &Deck) {
+	for (int i = 0; i < 5; i++) {
+		uniform_int_distribution<int> distribution(0, Deck.size() - 1);
+		int r = distribution(gen);
+		table[i] = (Deck[r]);
+		Deck.erase(Deck.begin() + r);
+	}
+}
+
+void NextCards(vector<Card>& Deck) {
+	Deck.clear();
+	fill_deck(Deck);
+	DrawHands(Deck);
+	DrawTable(Deck);
+
+	hand_card1.getComponent<SpriteComponent>().changeSprite(players[0].c1.get_suit_int(), players[0].c1.get_rank() - 2);
+	hand_card2.getComponent<SpriteComponent>().changeSprite(players[0].c2.get_suit_int(), players[0].c2.get_rank() - 2);
+
+	enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
+	enemy_card2.getComponent<SpriteComponent>().changeSprite(players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
+
+	card1.getComponent<SpriteComponent>().changeSprite(table[0].get_suit_int(), table[0].get_rank() - 2);
+	card2.getComponent<SpriteComponent>().changeSprite(table[1].get_suit_int(), table[1].get_rank() - 2);
+	card3.getComponent<SpriteComponent>().changeSprite(table[2].get_suit_int(), table[2].get_rank() - 2);
+	card4.getComponent<SpriteComponent>().changeSprite(table[3].get_suit_int(), table[3].get_rank() - 2);
+	card5.getComponent<SpriteComponent>().changeSprite(table[4].get_suit_int(), table[4].get_rank() - 2);
+
+}
+
+
+//////////////////////////////////////////////////////////////////
+
+/////// ADD HIDDEN/SHOW TO THE 1-5 CARDS FOR THE TABLE AND ADD COMPONENTS TO THEM DURING INIT
+
+///////////////////////////////////////////////
 int cnt = 0;
 
 int Show3Cards = 0;
@@ -293,6 +346,8 @@ bool ding17 = true;
 bool game_ended = false;
 
 int currentBB = 10; //current Big Blind value
+
+int lowestBet;
 
 void HandleBetButtons() {
 
@@ -359,7 +414,6 @@ void HandleBetButtons() {
 	if (BB_sub_small.getComponent<MouseController>().down) {
 		BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
-			int lowestBet = bet;
 			BB_sub_small.getComponent<MouseController>().down = false;
 			BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small.png");
 			if (bet > lowestBet) {
@@ -369,8 +423,110 @@ void HandleBetButtons() {
 	}
 }
 
-void Blinds(int BigBlind) {
-	switch (BigBlind) {
+
+float xB = 160;
+float yB = 90;
+
+float xS = 160;
+float yS = 90;
+
+bool BlindsToss(int Blind, float deltaTime) {
+	int animRate = 80;
+	bool con[4] = { 0,0,0,0 };
+	if (Blind == 1)
+	{
+		xB -= deltaTime * animRate/2;
+		yB -= deltaTime * animRate;
+		if (xB >= 122)
+		{
+			BigBlind.getComponent<PositionComponent>().x(xB);
+		}
+		else {
+			con[0] = true;
+		}
+		if (yB >= 1)
+		{
+			BigBlind.getComponent<PositionComponent>().y(yB);
+		}
+		else {
+			con[1] = true;
+		}
+
+		xS += deltaTime * animRate;
+		yS += deltaTime * animRate/2;
+		if (xS <= 242)
+		{
+			SmallBlind.getComponent<PositionComponent>().x(xS);
+		}
+		else {
+			con[2] = true;
+		}
+		if (yS <= 134)
+		{
+			SmallBlind.getComponent<PositionComponent>().y(yS);
+		}
+		else {
+			con[3] = true;
+		}
+
+		if (con[0] && con[1] && con[2] && con[3]) {
+			BigBlind.getComponent<PositionComponent>().x(122);
+			BigBlind.getComponent<PositionComponent>().y(1);
+			SmallBlind.getComponent<PositionComponent>().x(242);
+			SmallBlind.getComponent<PositionComponent>().y(134);
+			return true;
+		}
+	}
+	else if (Blind == 0)
+	{
+		xB += deltaTime * animRate;
+		yB += deltaTime * animRate/2;
+		if (xB <= 242)
+		{
+			BigBlind.getComponent<PositionComponent>().x(xB);
+		}
+		else {
+			con[0] = true;
+		}
+		
+		if (yB <= 134)
+		{
+			BigBlind.getComponent<PositionComponent>().y(yB);
+		}
+		else {
+			con[1] = true;
+		}
+
+		xS -= deltaTime * animRate/2;
+		yS -= deltaTime * animRate;
+		if (xS >= 122)
+		{
+			SmallBlind.getComponent<PositionComponent>().x(xS);
+		}
+		else {
+			con[2] = true;
+		}
+		if (yS >= 1)
+		{
+			SmallBlind.getComponent<PositionComponent>().y(yS);
+		}
+		else {
+			con[3] = true;
+		}
+
+		if (con[0] && con[1] && con[2] && con[3]) {
+			BigBlind.getComponent<PositionComponent>().x(242);
+			BigBlind.getComponent<PositionComponent>().y(135);
+			SmallBlind.getComponent<PositionComponent>().x(122);
+			SmallBlind.getComponent<PositionComponent>().y(1);
+			return true;
+		}
+	}
+	return false;
+}
+
+void Blinds(int Blind) {
+	switch (Blind) {
 		case 0: //Player got the Big Blind
 			money[0] -= currentBB;
 			currentBet[0] = currentBB;
@@ -389,6 +545,7 @@ void Blinds(int BigBlind) {
 				pool += currentBet[i];
 			}
 			bet = currentBet[1] - currentBet[0];
+			lowestBet = bet;
 			break;
 	}
 
@@ -401,16 +558,78 @@ bool stop = false; // stop bigblind animation
 
 bool note = false;
 
+bool conBlinds = false;
+
 float h1 = 148;
 
 float h2 = 148;
 
-void Game::update(float deltaTime)
-{
-	//scrolling through deck
-	if (!stop) {
-		if (1) {
-			if (row) { 
+
+//Cowboy breathing animation
+float cowboy_anim = 0;
+int k = 1;
+
+void CowboyAnim(float deltaTime) {
+	cowboy_anim += deltaTime;
+	if (cowboy_anim >= 1) {
+		cowboy.getComponent<SpriteComponent>().changeSprite(k, 0);
+		cowboy_anim = 0;
+		if (k == 1) {
+			k = 0;
+		}
+		else if (k == 0) {
+			k = 1;
+		}
+	}
+}
+
+bool nextround = false;
+
+void Round(float deltaTime) {
+	CowboyAnim(deltaTime);
+
+	if (hand_card1.getComponent<MouseController>().hovered) {
+		if (h1 >= 133) {
+			h1 -= deltaTime * 60; //move the card up to the y(133) coordinate
+		}
+		hand_card1.getComponent<PositionComponent>().y(int(h1));
+	}
+	else {
+		if (h1 < 148) {
+			h1 += deltaTime * 60; //move the card up to the y(148) Origin coordinate
+		}
+		else {
+			h1 = 148; //set the base coordinate in case deltaTime has changed it
+		}
+		hand_card1.getComponent<PositionComponent>().y(int(h1));
+	}
+
+	if (hand_card2.getComponent<MouseController>().hovered) {
+		if (h2 >= 133) {
+			h2 -= deltaTime * 60; //move the card up to the y(133) coordinate
+		}
+		hand_card2.getComponent<PositionComponent>().y(int(h2));
+	}
+	else {
+		if (h2 < 148) {
+			h2 += deltaTime * 60; //move the card up to the y(148) Origin coordinate
+		}
+		else {
+			h2 = 148; //set the base coordinate in case deltaTime has changed it
+		}
+		hand_card2.getComponent<PositionComponent>().y(int(h2));
+
+	}
+
+	//toosing blind tokens
+	if (!conBlinds) {
+		conBlinds = BlindsToss(bigblind, deltaTime);
+	}
+
+	// turning tokens
+	if (conBlinds) {
+		if (!stop) {
+			if (row) {
 				BigBlind.getComponent<SpriteComponent>().changeSprite(int(s), 0);
 				SmallBlind.getComponent<SpriteComponent>().changeSprite(int(s), 0);
 			}
@@ -420,7 +639,6 @@ void Game::update(float deltaTime)
 			}
 
 			s += deltaTime * 17;
-			cout << s << endl;
 			if (int(s) == 9 && !row) {
 				stop = true;
 			}
@@ -431,82 +649,36 @@ void Game::update(float deltaTime)
 		}
 	}
 
-	if (hand_card1.getComponent<MouseController>().hovered) {
-		if (h1 >= 133) {
-			h1 -= deltaTime*60;
-		}
-		hand_card1.getComponent<PositionComponent>().y(int(h1));
-	}
-	else {
-		if (h1 < 148) {
-			h1 += deltaTime * 60;
-		}
-		hand_card1.getComponent<PositionComponent>().y(int(h1));
-	}
 
-	if (hand_card2.getComponent<MouseController>().hovered) {
-		if (h2 >= 133) {
-			h2 -= deltaTime * 60;
+	// showing token notes
+	if (conBlinds) {
+		//Showing token notes
+		if (BigBlind.getComponent<MouseController>().hovered) {
+			BigBlindNote.getComponent<SpriteComponent>().shown();
+
 		}
 		else {
-			h1 = 148;
+			BigBlindNote.getComponent<SpriteComponent>().hidden();
 		}
-		hand_card2.getComponent<PositionComponent>().y(int(h2));
-	}
-	else {
-		if (h2 < 148) {
-			h2 += deltaTime * 60;
+
+		if (SmallBlind.getComponent<MouseController>().hovered) {
+			SmallBlindNote.getComponent<SpriteComponent>().shown();
+
 		}
 		else {
-			h2 = 148;
+			SmallBlindNote.getComponent<SpriteComponent>().hidden();
 		}
-		hand_card2.getComponent<PositionComponent>().y(int(h2));
-		
-	}
 
-	if (BigBlind.getComponent<MouseController>().hovered) {
-		BigBlindNote.getComponent<SpriteComponent>().shown();
-		
-	}
-	else {
-		BigBlindNote.getComponent<SpriteComponent>().hidden();
-	}
-
-	if (SmallBlind.getComponent<MouseController>().hovered) {
-		SmallBlindNote.getComponent<SpriteComponent>().shown();
-
-	}
-	else {
-		SmallBlindNote.getComponent<SpriteComponent>().hidden();
-	}
-
-
-
-	manager.update();
-	if (!start_game) {
-		if (Start_button.getComponent<MouseController>().down) {
-			Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button_c.png");
-			if (event.type == SDL_MOUSEBUTTONUP) {
-				Start_button.getComponent<MouseController>().down = false;
-				Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button.png");
-				start_game = true;
-				Start_button.destroy();
-				Blinds(bigblind);
+		if (!game_ended) {
+			HandleBetButtons();
+		}
+		if (!bigblind) {
+			//Enemy move
+			while (currentBet[0] != currentBet[1]) {
+				money[1]--;
+				currentBet[1]++;
+				pool++;
 			}
-		}
-		
-		return;
-	}
-
-	if (!game_ended) {
-		HandleBetButtons();
-	}
-	if (!bigblind) {
-		//Enemy move
-		while (currentBet[0] != currentBet[1]) {
-			money[1]--;
-			currentBet[1]++;
-			pool++;
 		}
 	}
 
@@ -527,7 +699,7 @@ void Game::update(float deltaTime)
 		Show3Cards = 2;
 		ding4 = false;
 	}
-	
+
 	if (ding4) {
 		return;
 	}
@@ -539,7 +711,7 @@ void Game::update(float deltaTime)
 		pool++;
 	}
 
-	
+
 	if (ding5) {
 		return;
 	}
@@ -551,8 +723,8 @@ void Game::update(float deltaTime)
 		pool++;
 	}
 	ding6 = false;
-	
-	
+
+
 	if (ding6)
 		return;
 
@@ -614,11 +786,41 @@ void Game::update(float deltaTime)
 		ding16 = false;
 		game_ended = true;
 		ding17 = false;
+		nextround = true;
 	}
 	if (ding17) {
 		return;
 	}
+}
+
+
+
+
+void Game::update(float deltaTime)
+{
+	manager.update();
+	if (!start_game) {
+		if (Start_button.getComponent<MouseController>().down) {
+			Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button_c.png");
+			if (event.type == SDL_MOUSEBUTTONUP) {
+				Start_button.getComponent<MouseController>().down = false;
+				Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button.png");
+				start_game = true;
+				Start_button.destroy();
+				Blinds(bigblind);
+			}
+		}
+		
+		return;
+	}
+
+	Round(deltaTime);
 	
+	if (nextround)
+	{
+		NextCards(Deck);
+		nextround = false;
+	}
 	
 	
 
