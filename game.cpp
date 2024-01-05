@@ -75,6 +75,9 @@ auto& SmallBlindNote(manager.addEntity());
 auto& Start_button(manager.addEntity());
 
 
+auto& Mouse(manager.addEntity());
+
+
 Game::Game()
 {}
 
@@ -150,6 +153,10 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	bigblind = Random(0, 1);
 
 	//ECS 
+
+	SDL_ShowCursor(false);
+	Mouse.addComponent<PositionComponent>();
+	Mouse.addComponent<SpriteComponent>("assets/Cursor.png", 10, 11);
 
 	hand_card1.addComponent<PositionComponent>(62, 148);
 	hand_card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, players[0].c1.get_suit_int(), players[0].c1.get_rank() - 2);
@@ -677,14 +684,14 @@ void Round(float deltaTime) {
 		if (!flags.GameEnded) {
 			HandleBetButtons();
 		}
-		if (!bigblind) {
-			//Enemy move
-			while (currentBet[0] != currentBet[1]) {
-				money[1]--;
-				currentBet[1]++;
-				pool++;
-			}
-		}
+		//if (!bigblind) {
+		//	//Enemy move
+		//	while (currentBet[0] != currentBet[1]) {
+		//		money[1]--;
+		//		currentBet[1]++;
+		//		pool++;
+		//	}
+		//}
 	}
 
 
@@ -703,11 +710,14 @@ void Round(float deltaTime) {
 	}
 
 	//Enemy move
-	while (currentBet[0] != currentBet[1]) {
-		money[1]--;
-		currentBet[1]++;
-		pool++;
+	if (currentBet[0] > currentBet[1]) {
+		while (currentBet[0] != currentBet[1]) {
+			money[1]--;
+			currentBet[1]++;
+			pool++;
+		}
 	}
+	
 
 	//Display 4th card
 	if (flags.Show4Card) {
@@ -760,6 +770,9 @@ void Round(float deltaTime) {
 
 void Game::update(float deltaTime)
 {
+	SDL_GetMouseState(&x, &y);
+	Mouse.getComponent<PositionComponent>().x(x / r_scale - 1);
+	Mouse.getComponent<PositionComponent>().y(y / r_scale);
 	manager.update();
 	if (flags.StartGame) {
 		if (Start_button.getComponent<MouseController>().down) {

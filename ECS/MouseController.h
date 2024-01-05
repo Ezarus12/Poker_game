@@ -26,6 +26,7 @@ public:
 		SDL_GetMouseState(&x, &y);
 		x /= r_scale;
 		y /= r_scale;
+
 		if (Game::event.type == SDL_MOUSEBUTTONDOWN) { //clicked
 			if (x >= sprite->x() && x <= (sprite->x() + sprite->w()) && y >= sprite->y() && y <= (sprite->y() + sprite->h())) { //checking if the coursor location is within the sprite area
 				down = true;
