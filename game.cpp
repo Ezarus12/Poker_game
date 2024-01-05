@@ -1,4 +1,5 @@
 #include "Variables.h"
+#include "flags.h"
 #include "game.h"
 #include "TextureManager.h"
 #include "GameObject.h"
@@ -10,6 +11,8 @@
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 SDL_Texture* background;
+
+Flags flags;
 
 Manager manager;
 auto& cowboy(manager.addEntity());
@@ -71,8 +74,6 @@ auto& SmallBlindNote(manager.addEntity());
 //Start button
 auto& Start_button(manager.addEntity());
 
-
-bool start_game = false;
 
 Game::Game()
 {}
@@ -164,6 +165,29 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 	back_card.addComponent<PositionComponent>(12, card_y);
 	back_card.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
+
+
+	card1.addComponent<PositionComponent>(card_x, card_y);
+	card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[0].get_suit_int(), table[0].get_rank() - 2);
+	card1.getComponent<SpriteComponent>().hidden();
+
+	card2.addComponent<PositionComponent>(card_x + card_spacing * 1, card_y);
+	card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[1].get_suit_int(), table[1].get_rank() - 2);
+	card2.getComponent<SpriteComponent>().hidden();
+
+	card3.addComponent<PositionComponent>(card_x + card_spacing * 2, card_y);
+	card3.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[2].get_suit_int(), table[2].get_rank() - 2);
+	card3.getComponent<SpriteComponent>().hidden();
+
+	card4.addComponent<PositionComponent>(card_x + card_spacing * 3, card_y);
+	card4.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[3].get_suit_int(), table[3].get_rank() - 2);
+	card4.getComponent<SpriteComponent>().hidden();
+
+	card5.addComponent<PositionComponent>(card_x + card_spacing * 4, card_y);
+	card5.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[4].get_suit_int(), table[4].get_rank() - 2);
+	card5.getComponent<SpriteComponent>().hidden();
+
+
 
 	cowboy.addComponent<PositionComponent>(60, 0);
 	cowboy.addComponent<SpriteComponent>("assets/Cowboy_Sheet.png", 60, 60);
@@ -320,31 +344,6 @@ void NextCards(vector<Card>& Deck) {
 }
 
 
-//////////////////////////////////////////////////////////////////
-
-/////// ADD HIDDEN/SHOW TO THE 1-5 CARDS FOR THE TABLE AND ADD COMPONENTS TO THEM DURING INIT
-
-///////////////////////////////////////////////
-int cnt = 0;
-
-int Show3Cards = 0;
-bool ding4 = true;
-bool ding5 = true;
-bool ding6 = true;
-bool ding7 = true;
-bool ding8 = true;
-bool ding9 = true;
-bool ding10 = true;
-bool ding11 = true;
-bool ding12 = true;
-bool ding13 = true;
-bool ding14 = true;
-bool ding15 = true;
-bool ding16 = true;
-bool ding17 = true;
-
-bool game_ended = false;
-
 int currentBB = 10; //current Big Blind value
 
 int lowestBet;
@@ -360,17 +359,24 @@ void HandleBetButtons() {
 			money[0] -= bet;
 			currentBet[0] += bet;
 			bet = 0;
-			if (Show3Cards == 0) {
-				Show3Cards = 1;
+			if (flags.firstBet) {
+				flags.firstBet = false;
+				flags.Show3Cards = true;
+				flags.secondBet = true;
 			}
-			if (!ding4) {
-				ding5 = false;
+			else if (flags.secondBet) {
+				flags.secondBet = false;
+				flags.Show4Card = true;
+				flags.thirdBet = true;
 			}
-			if (!ding12) {
-				ding13 = false;
+			else if (flags.thirdBet) {
+				flags.thirdBet = false;
+				flags.Show5Card = true;
+				flags.fourthBet = true;
 			}
-			if (!ding14) {
-				ding15 = false;
+			else if (flags.fourthBet) {
+				flags.fourthBet = false;
+				flags.endRound = true;
 			}
 		}
 	}
@@ -649,7 +655,6 @@ void Round(float deltaTime) {
 		}
 	}
 
-
 	// showing token notes
 	if (conBlinds) {
 		//Showing token notes
@@ -669,7 +674,7 @@ void Round(float deltaTime) {
 			SmallBlindNote.getComponent<SpriteComponent>().hidden();
 		}
 
-		if (!game_ended) {
+		if (!flags.GameEnded) {
 			HandleBetButtons();
 		}
 		if (!bigblind) {
@@ -682,26 +687,19 @@ void Round(float deltaTime) {
 		}
 	}
 
+
+	
+
 	//Displaying first 3 cards
-	if (Show3Cards == 1) {
+	if (flags.Show3Cards) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
 		cout << "3cards" << endl;
-		card1.addComponent<PositionComponent>(card_x, card_y);
-		card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[0].get_suit_int(), table[0].get_rank() - 2);
+		card1.getComponent<SpriteComponent>().shown();
+		card2.getComponent<SpriteComponent>().shown();
+		card3.getComponent<SpriteComponent>().shown();
 
-		card2.addComponent<PositionComponent>(card_x + card_spacing * 1, card_y);
-		card2.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[1].get_suit_int(), table[1].get_rank() - 2);
-
-		card3.addComponent<PositionComponent>(card_x + card_spacing * 2, card_y);
-		card3.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[2].get_suit_int(), table[2].get_rank() - 2);
-
-		Show3Cards = 2;
-		ding4 = false;
-	}
-
-	if (ding4) {
-		return;
+		flags.Show3Cards = false;
 	}
 
 	//Enemy move
@@ -711,59 +709,26 @@ void Round(float deltaTime) {
 		pool++;
 	}
 
-
-	if (ding5) {
-		return;
-	}
-
-	//Enemy move
-	while (currentBet[0] != currentBet[1]) {
-		money[1]--;
-		currentBet[1]++;
-		pool++;
-	}
-	ding6 = false;
-
-
-	if (ding6)
-		return;
-
-	if (ding7) {
+	//Display 4th card
+	if (flags.Show4Card) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
 		cout << "4 card" << endl;
-		card4.addComponent<PositionComponent>(card_x + card_spacing * 3, card_y);
-		card4.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[3].get_suit_int(), table[3].get_rank() - 2);
-		ding7 = false;
-		ding12 = false;
+		
+		card4.getComponent<SpriteComponent>().shown();
+		flags.Show4Card = false;
 	}
-	if (ding13) {
-		return;
-	}
-
-	while (currentBet[0] != currentBet[1]) {
-		money[1]--;
-		currentBet[1]++;
-		pool++;
-	}
-	ding9 = false;
-
-	if (ding9)
-		return;
-
-	if (ding10) {
+	//Display 5th card
+	if (flags.Show5Card) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
 		cout << "5 card" << endl;
-		card5.addComponent<PositionComponent>(card_x + card_spacing * 4, card_y);
-		card5.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[4].get_suit_int(), table[4].get_rank() - 2);
-		ding10 = false;
-		ding14 = false;
+		
+		card5.getComponent<SpriteComponent>().shown();
+		flags.Show5Card = false;
 	}
-	if (ding15)
-		return;
 
-	if (ding16) {
+	if (flags.endRound) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
 		enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
@@ -783,29 +748,26 @@ void Round(float deltaTime) {
 		}
 		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
-		ding16 = false;
-		game_ended = true;
-		ding17 = false;
-		nextround = true;
-	}
-	if (ding17) {
-		return;
+
+		flags.endRound = false;
+
+		cout << "Player combination = ";
+		score_s(win_s(hands[0]));
+
+		flags.GameEnded = true;
 	}
 }
-
-
-
 
 void Game::update(float deltaTime)
 {
 	manager.update();
-	if (!start_game) {
+	if (flags.StartGame) {
 		if (Start_button.getComponent<MouseController>().down) {
 			Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button_c.png");
 			if (event.type == SDL_MOUSEBUTTONUP) {
 				Start_button.getComponent<MouseController>().down = false;
 				Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button.png");
-				start_game = true;
+				flags.StartGame = false;
 				Start_button.destroy();
 				Blinds(bigblind);
 			}
@@ -816,11 +778,20 @@ void Game::update(float deltaTime)
 
 	Round(deltaTime);
 	
-	if (nextround)
+	/*if (nextround)
 	{
+		card1.getComponent<SpriteComponent>().hidden();
+		card2.getComponent<SpriteComponent>().hidden();
+		card3.getComponent<SpriteComponent>().hidden();
+		card4.getComponent<SpriteComponent>().hidden();
+		card5.getComponent<SpriteComponent>().hidden();
+
+		enemy_card1.getComponent<SpriteComponent>().changeSprite(0, 13);
+		enemy_card2.getComponent<SpriteComponent>().changeSprite(0, 13);
+
 		NextCards(Deck);
 		nextround = false;
-	}
+	}*/
 	
 	
 
