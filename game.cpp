@@ -14,31 +14,6 @@ SDL_Texture* background;
 
 Flags flags;
 
-Manager manager;
-auto& cowboy(manager.addEntity());
-
-auto& card1(manager.addEntity());
-auto& card2(manager.addEntity());
-auto& card3(manager.addEntity());
-auto& card4(manager.addEntity());
-auto& card5(manager.addEntity());
-
-auto& hand_card1(manager.addEntity());
-auto& hand_card2(manager.addEntity());
-
-auto& enemy_card1(manager.addEntity());
-auto& enemy_card2(manager.addEntity());
-
-auto& back_card(manager.addEntity());
-
-//betting button
-auto& BB_center(manager.addEntity());
-auto& BB_sub_big(manager.addEntity());
-auto& BB_sub_small(manager.addEntity());
-auto& BB_add_big(manager.addEntity());
-auto& BB_add_small(manager.addEntity());
-
-
 vector<Card> Deck;  //Deck containg all 52 cards
 
 vector<Card> table;  //set of 5 cards on the table
@@ -61,22 +36,9 @@ int bet = 0;
 
 SDL_Color red = { 148,0,0,255 };
 
-auto& money_text(manager.addEntity());
-auto& bet_text(manager.addEntity());
-auto& pool_text(manager.addEntity());
-
-auto& BigBlind(manager.addEntity());
-auto& BigBlindNote(manager.addEntity());
-
-auto& SmallBlind(manager.addEntity());
-auto& SmallBlindNote(manager.addEntity());
-
-//Start button
-auto& Start_button(manager.addEntity());
 
 
-auto& Mouse(manager.addEntity());
-
+#include "Animations.h"
 
 Game::Game()
 {}
@@ -314,6 +276,7 @@ void Game::handleEvents()
 }
 
 
+//WIP
 void DrawHands(vector<Card> &Deck) {
 	for (int i = 0; i < players_num; i++) {
 		players[i] = (draw(Deck));
@@ -436,108 +399,6 @@ void HandleBetButtons() {
 	}
 }
 
-
-float xB = 160;
-float yB = 90;
-
-float xS = 160;
-float yS = 90;
-
-bool BlindsToss(int Blind, float deltaTime) {
-	int animRate = 80;
-	bool con[4] = { 0,0,0,0 };
-	if (Blind == 1)
-	{
-		xB -= deltaTime * animRate/2;
-		yB -= deltaTime * animRate;
-		if (xB >= 122)
-		{
-			BigBlind.getComponent<PositionComponent>().x(xB);
-		}
-		else {
-			con[0] = true;
-		}
-		if (yB >= 1)
-		{
-			BigBlind.getComponent<PositionComponent>().y(yB);
-		}
-		else {
-			con[1] = true;
-		}
-
-		xS += deltaTime * animRate;
-		yS += deltaTime * animRate/2;
-		if (xS <= 242)
-		{
-			SmallBlind.getComponent<PositionComponent>().x(xS);
-		}
-		else {
-			con[2] = true;
-		}
-		if (yS <= 134)
-		{
-			SmallBlind.getComponent<PositionComponent>().y(yS);
-		}
-		else {
-			con[3] = true;
-		}
-
-		if (con[0] && con[1] && con[2] && con[3]) {
-			BigBlind.getComponent<PositionComponent>().x(122);
-			BigBlind.getComponent<PositionComponent>().y(1);
-			SmallBlind.getComponent<PositionComponent>().x(242);
-			SmallBlind.getComponent<PositionComponent>().y(134);
-			return true;
-		}
-	}
-	else if (Blind == 0)
-	{
-		xB += deltaTime * animRate;
-		yB += deltaTime * animRate/2;
-		if (xB <= 242)
-		{
-			BigBlind.getComponent<PositionComponent>().x(xB);
-		}
-		else {
-			con[0] = true;
-		}
-		
-		if (yB <= 134)
-		{
-			BigBlind.getComponent<PositionComponent>().y(yB);
-		}
-		else {
-			con[1] = true;
-		}
-
-		xS -= deltaTime * animRate/2;
-		yS -= deltaTime * animRate;
-		if (xS >= 122)
-		{
-			SmallBlind.getComponent<PositionComponent>().x(xS);
-		}
-		else {
-			con[2] = true;
-		}
-		if (yS >= 1)
-		{
-			SmallBlind.getComponent<PositionComponent>().y(yS);
-		}
-		else {
-			con[3] = true;
-		}
-
-		if (con[0] && con[1] && con[2] && con[3]) {
-			BigBlind.getComponent<PositionComponent>().x(242);
-			BigBlind.getComponent<PositionComponent>().y(135);
-			SmallBlind.getComponent<PositionComponent>().x(122);
-			SmallBlind.getComponent<PositionComponent>().y(1);
-			return true;
-		}
-	}
-	return false;
-}
-
 void Blinds(int Blind) {
 	switch (Blind) {
 		case 0: //Player got the Big Blind
@@ -564,106 +425,23 @@ void Blinds(int Blind) {
 
 }
 
-float s = 0;
-bool row = true; //change row in bigblind animation
-
-bool stop = false; // stop bigblind animation
-
-bool note = false;
-
-bool conBlinds = false;
-
-float h1 = 148;
-
-float h2 = 148;
-
-
-//Cowboy breathing animation
-float cowboy_anim = 0;
-int k = 1;
-
-void CowboyAnim(float deltaTime) {
-	cowboy_anim += deltaTime;
-	if (cowboy_anim >= 1) {
-		cowboy.getComponent<SpriteComponent>().changeSprite(k, 0);
-		cowboy_anim = 0;
-		if (k == 1) {
-			k = 0;
-		}
-		else if (k == 0) {
-			k = 1;
-		}
-	}
-}
-
-bool nextround = false;
-
 void Round(float deltaTime) {
 	CowboyAnim(deltaTime);
-
-	if (hand_card1.getComponent<MouseController>().hovered) {
-		if (h1 >= 133) {
-			h1 -= deltaTime * 60; //move the card up to the y(133) coordinate
-		}
-		hand_card1.getComponent<PositionComponent>().y(int(h1));
-	}
-	else {
-		if (h1 < 148) {
-			h1 += deltaTime * 60; //move the card up to the y(148) Origin coordinate
-		}
-		else {
-			h1 = 148; //set the base coordinate in case deltaTime has changed it
-		}
-		hand_card1.getComponent<PositionComponent>().y(int(h1));
-	}
-
-	if (hand_card2.getComponent<MouseController>().hovered) {
-		if (h2 >= 133) {
-			h2 -= deltaTime * 60; //move the card up to the y(133) coordinate
-		}
-		hand_card2.getComponent<PositionComponent>().y(int(h2));
-	}
-	else {
-		if (h2 < 148) {
-			h2 += deltaTime * 60; //move the card up to the y(148) Origin coordinate
-		}
-		else {
-			h2 = 148; //set the base coordinate in case deltaTime has changed it
-		}
-		hand_card2.getComponent<PositionComponent>().y(int(h2));
-
-	}
+	HandCardsHover(deltaTime);
+	
 
 	//toosing blind tokens
-	if (!conBlinds) {
-		conBlinds = BlindsToss(bigblind, deltaTime);
+	if (!flags.BlindsCon) {
+		flags.BlindsCon = BlindsToss(bigblind, deltaTime);
 	}
 
 	// turning tokens
-	if (conBlinds) {
-		if (!stop) {
-			if (row) {
-				BigBlind.getComponent<SpriteComponent>().changeSprite(int(s), 0);
-				SmallBlind.getComponent<SpriteComponent>().changeSprite(int(s), 0);
-			}
-			else {
-				BigBlind.getComponent<SpriteComponent>().changeSprite(int(s), 1);
-				SmallBlind.getComponent<SpriteComponent>().changeSprite(int(s), 1);
-			}
-
-			s += deltaTime * 17;
-			if (int(s) == 9 && !row) {
-				stop = true;
-			}
-			if (int(s) >= 9) {
-				s = 0;
-				row = !row;
-			}
-		}
+	if (flags.BlindsCon) {
+		TurningBlinds(deltaTime);
 	}
 
 	// showing token notes
-	if (conBlinds) {
+	if (flags.BlindsCon) {
 		//Showing token notes
 		if (BigBlind.getComponent<MouseController>().hovered) {
 			BigBlindNote.getComponent<SpriteComponent>().shown();
@@ -680,21 +458,16 @@ void Round(float deltaTime) {
 		else {
 			SmallBlindNote.getComponent<SpriteComponent>().hidden();
 		}
-
-		if (!flags.GameEnded) {
-			HandleBetButtons();
-		}
-		//if (!bigblind) {
-		//	//Enemy move
-		//	while (currentBet[0] != currentBet[1]) {
-		//		money[1]--;
-		//		currentBet[1]++;
-		//		pool++;
-		//	}
-		//}
 	}
 
+	if (!flags.GameEnded) {
+		HandleBetButtons();
+	}
 
+	if (flags.EnemyMove) {
+		cout << "Enemy move\n";
+		flags.EnemyMove = false;
+	}
 	
 
 	//Displaying first 3 cards
@@ -707,6 +480,7 @@ void Round(float deltaTime) {
 		card3.getComponent<SpriteComponent>().shown();
 
 		flags.Show3Cards = false;
+		flags.EnemyMove = true;
 	}
 
 	//Enemy move
@@ -727,7 +501,9 @@ void Round(float deltaTime) {
 		
 		card4.getComponent<SpriteComponent>().shown();
 		flags.Show4Card = false;
+		flags.EnemyMove = true;
 	}
+
 	//Display 5th card
 	if (flags.Show5Card) {
 		currentBet[0] = 0;
@@ -736,6 +512,7 @@ void Round(float deltaTime) {
 		
 		card5.getComponent<SpriteComponent>().shown();
 		flags.Show5Card = false;
+		flags.EnemyMove = true;
 	}
 
 	if (flags.endRound) {
@@ -760,10 +537,6 @@ void Round(float deltaTime) {
 		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 
 		flags.endRound = false;
-
-		cout << "Player combination = ";
-		score_s(win_s(hands[0]));
-
 		flags.GameEnded = true;
 	}
 }
