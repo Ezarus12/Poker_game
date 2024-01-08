@@ -31,6 +31,7 @@ auto& BB_add_big(manager.addEntity());
 auto& BB_add_small(manager.addEntity());
 
 auto& money_text(manager.addEntity());
+auto& enemy_money_text(manager.addEntity());
 auto& bet_text(manager.addEntity());
 auto& pool_text(manager.addEntity());
 
@@ -42,6 +43,14 @@ auto& SmallBlindNote(manager.addEntity());
 
 //Start button
 auto& Start_button(manager.addEntity());
+
+auto& Fold_button(manager.addEntity());
+
+auto& PokerRanking(manager.addEntity());
+
+
+
+
 
 
 auto& Mouse(manager.addEntity());

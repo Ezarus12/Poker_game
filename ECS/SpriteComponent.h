@@ -37,6 +37,10 @@ public:
 		src_y = src_y_;
 	}
 
+	bool get_show() {
+		return show;
+	}
+
 	void setTex(const char* path) {
 		texture = TextureManager::LoadTexture(path);
 	}

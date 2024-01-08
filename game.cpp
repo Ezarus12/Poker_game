@@ -193,6 +193,10 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
 	money_text.getComponent<TextComponent>().setNum(&money[0]);
 
+	money_text.addComponent<PositionComponent>(290, 7);
+	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
+	money_text.getComponent<TextComponent>().setNum(&money[1]);
+
 	bet_text.addComponent<PositionComponent>(155, 157);
 	bet_text.addComponent<TextComponent>("assets/font.ttf", 13, std::to_string(0), red);
 	bet_text.getComponent<TextComponent>().setNum(&bet);
@@ -204,6 +208,10 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	Start_button.addComponent<PositionComponent>(97, 66);
 	Start_button.addComponent<SpriteComponent>("assets/Start_button.png", 126, 48);
 	Start_button.addComponent<MouseController>();
+
+	Fold_button.addComponent<PositionComponent>(216, 157);
+	Fold_button.addComponent<SpriteComponent>("assets/Fold_button.png", 34, 18);
+	Fold_button.addComponent<MouseController>();
 
 	if (bigblind) 
 	{
@@ -235,8 +243,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	SmallBlindNote.addComponent<SpriteComponent>("assets/SmallBlindNote.png", 51, 12);
 	SmallBlindNote.getComponent<SpriteComponent>().hidden();
 	
-
-	cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
+	PokerRanking.addComponent<PositionComponent>(70, 0);
+	PokerRanking.addComponent<SpriteComponent>("assets/Poker_hand_ranking.png", 180, 646);
+	PokerRanking.getComponent<SpriteComponent>().hidden();
 }
 
 void Game::handleEvents()
@@ -247,29 +256,26 @@ void Game::handleEvents()
 			isRunning = false;
 			break;
 		case SDL_MOUSEWHEEL:
+			if (PokerRanking.getComponent<SpriteComponent>().get_show()) {
 				if (event.wheel.y > 0) // scroll up
 				{
-					cout << "Gora\n";
-					int y = cowboy.getComponent<PositionComponent>().y() - 1;
-					cowboy.getComponent<PositionComponent>().y(y);
-					// Put code for handling "scroll up" here!
+					int y = PokerRanking.getComponent<PositionComponent>().y();
+					if (y < 0) {
+						y += 10;
+						PokerRanking.getComponent<PositionComponent>().y(y);
+					}
 				}
 				else if (event.wheel.y < 0) // scroll down
 				{
-					cout << "Dol\n";
-					int y = cowboy.getComponent<PositionComponent>().y() + 1;
-					cowboy.getComponent<PositionComponent>().y(y);
-					// Put code for handling "scroll down" here!
-				}
+					int y = PokerRanking.getComponent<PositionComponent>().y();
+					if (y >= -450) {
+						y -= 10;
+						PokerRanking.getComponent<PositionComponent>().y(y);
+					}
 
-				if (event.wheel.x > 0) // scroll right
-				{
-					// ...
 				}
-				else if (event.wheel.x < 0) // scroll left
-				{
-					// ...
-				}
+			}
+				
 		default:
 			break;
 	}
@@ -320,6 +326,7 @@ int lowestBet;
 
 void HandleBetButtons() {
 
+	//Bet button
 	if (BB_center.getComponent<MouseController>().down) {
 		BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
@@ -351,6 +358,7 @@ void HandleBetButtons() {
 		}
 	}
 
+	//Plus 10 button
 	if (BB_add_big.getComponent<MouseController>().down) {
 		BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
@@ -362,7 +370,7 @@ void HandleBetButtons() {
 		}
 	}
 
-
+	//Plus 1 button
 	if (BB_add_small.getComponent<MouseController>().down) {
 		BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
@@ -374,7 +382,7 @@ void HandleBetButtons() {
 		}
 	}
 
-
+	//Minus 10 button
 	if (BB_sub_big.getComponent<MouseController>().down) {
 		BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
@@ -386,7 +394,7 @@ void HandleBetButtons() {
 		}
 	}
 
-
+	//Minus 1 button
 	if (BB_sub_small.getComponent<MouseController>().down) {
 		BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
@@ -395,6 +403,17 @@ void HandleBetButtons() {
 			if (bet > lowestBet) {
 				bet -= 1;
 			}
+		}
+	}
+
+	//Fold button
+	if (Fold_button.getComponent<MouseController>().down) {
+		Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button_c.png");
+		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			Fold_button.getComponent<MouseController>().down = false;
+			Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button.png");
+			flags.GameEnded = true;
+			cout << "Player folded";
 		}
 	}
 }
