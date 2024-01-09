@@ -336,6 +336,7 @@ void HandleBetButtons() {
 			money[0] -= bet;
 			currentBet[0] += bet;
 			bet = 0;
+			lowestBet = 0;
 			if (flags.firstBet) {
 				flags.firstBet = false;
 				flags.Show3Cards = true;
@@ -388,7 +389,7 @@ void HandleBetButtons() {
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
 			BB_sub_big.getComponent<MouseController>().down = false;
 			BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big.png");
-			if (bet >= 10) {
+			if (bet >= 10 && bet - 10 >= lowestBet) {
 				bet -= 10;
 			}
 		}
@@ -483,11 +484,14 @@ void Round(float deltaTime) {
 		HandleBetButtons();
 	}
 
-	if (flags.EnemyMove) {
-		cout << "Enemy move\n";
-		flags.EnemyMove = false;
+	//Enemy move
+	if (currentBet[0] > currentBet[1]) {
+		while (currentBet[0] != currentBet[1]) {
+			money[1]--;
+			currentBet[1]++;
+			pool++;
+		}
 	}
-	
 
 	//Displaying first 3 cards
 	if (flags.Show3Cards) {
@@ -502,14 +506,7 @@ void Round(float deltaTime) {
 		flags.EnemyMove = true;
 	}
 
-	//Enemy move
-	if (currentBet[0] > currentBet[1]) {
-		while (currentBet[0] != currentBet[1]) {
-			money[1]--;
-			currentBet[1]++;
-			pool++;
-		}
-	}
+	
 	
 
 	//Display 4th card
