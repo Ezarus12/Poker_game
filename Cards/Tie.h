@@ -10,6 +10,12 @@ void ignoreHands(int ignored) { //Set the specific hand to true and all of the h
 	}
 }
 
+void ResetIgnoreHands() {
+	for (int i = 0; i <= 9; i++) {
+		ignoreHand[i] = false;
+	}
+}
+
 void Compare(vector<Score>& s, vector<vector<Card>>& hands) {
 	switch (s[0].score)
 	{

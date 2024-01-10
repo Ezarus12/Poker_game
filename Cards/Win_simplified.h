@@ -171,7 +171,7 @@ int Straight_s(const vector<Card>& cards, int score) {
 	return score;
 }
 
-int win_s(const vector<Card>& cards) {
+int win_Simplified(const vector<Card>& cards) {
 
 	int score = 10;
 	//Straight, Straight Flush or Royal Flush
@@ -192,7 +192,7 @@ int win_s(const vector<Card>& cards) {
 	return score;
 }
 
-void score_s(int score) {
+void score_Simplified(int score) {
 	switch (score) {
 	case 1:
 		cout << "ROYAL POKER!!!" << endl;

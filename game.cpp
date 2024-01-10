@@ -99,19 +99,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		Deck.erase(Deck.begin() + r);
 	}
 
-	
-
-	
-
-
-	////TEST!!!!!!
-	//vector<Card> cards_test = { Card(5,'D'),Card(5,'H'),Card(6,'C'),Card(8,'S'),Card(14,'D'),Card(14,'H'),Card(14,'S') };
-	//vector<Score> scores_test;
-	//Score* s = new Score();
-	//scores_test.push_back(*s);
-	//win(cards_test, scores_test[0]);
-	//score(scores_test[0]);
-
 	bigblind = Random(0, 1);
 
 	//ECS 
@@ -286,7 +273,6 @@ void Game::handleEvents()
 	}
 }
 
-
 //WIP
 void DrawHands(vector<Card> &Deck) {
 	for (int i = 0; i < players_num; i++) {
@@ -304,7 +290,7 @@ void DrawTable(vector<Card> &Deck) {
 	}
 }
 
-void NextCards(vector<Card>& Deck) {
+void NextCards(vector<Card> &Deck) {
 	Deck.clear();
 	fill_deck(Deck);
 	DrawHands(Deck);
@@ -313,8 +299,8 @@ void NextCards(vector<Card>& Deck) {
 	hand_card1.getComponent<SpriteComponent>().changeSprite(players[0].c1.get_suit_int(), players[0].c1.get_rank() - 2);
 	hand_card2.getComponent<SpriteComponent>().changeSprite(players[0].c2.get_suit_int(), players[0].c2.get_rank() - 2);
 
-	enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
-	enemy_card2.getComponent<SpriteComponent>().changeSprite(players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
+	enemy_card1.getComponent<SpriteComponent>().changeSprite(0, 13);
+	enemy_card2.getComponent<SpriteComponent>().changeSprite(0, 13);
 
 	card1.getComponent<SpriteComponent>().changeSprite(table[0].get_suit_int(), table[0].get_rank() - 2);
 	card2.getComponent<SpriteComponent>().changeSprite(table[1].get_suit_int(), table[1].get_rank() - 2);
@@ -420,8 +406,8 @@ void HandleBetButtons() {
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
 			Fold_button.getComponent<MouseController>().down = false;
 			Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button.png");
-			flags.GameEnded = true;
 			cout << "Player folded";
+			flags.NextRound = true;
 		}
 	}
 }
@@ -451,6 +437,16 @@ void Blinds(int Blind) {
 	}
 
 }
+
+void MoneyTransfer(int& i, float deltaTime) {
+	money_transfer_anim += deltaTime;
+	if (money_transfer_anim >= (0.33f)/pool) {
+		money_transfer_anim = 0;
+		pool--;
+		i++;
+	}
+}
+
 void Round(float deltaTime) {
 	CowboyAnim(deltaTime);
 	HandCardsHover(deltaTime);
@@ -503,7 +499,6 @@ void Round(float deltaTime) {
 	if (flags.Show3Cards) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
-		cout << "3cards" << endl;
 		card1.getComponent<SpriteComponent>().shown();
 		card2.getComponent<SpriteComponent>().shown();
 		card3.getComponent<SpriteComponent>().shown();
@@ -512,14 +507,10 @@ void Round(float deltaTime) {
 		flags.EnemyMove = true;
 	}
 
-	
-	
-
 	//Display 4th card
 	if (flags.Show4Card) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
-		cout << "4 card" << endl;
 		
 		card4.getComponent<SpriteComponent>().shown();
 		flags.Show4Card = false;
@@ -530,8 +521,7 @@ void Round(float deltaTime) {
 	if (flags.Show5Card) {
 		currentBet[0] = 0;
 		currentBet[1] = 0;
-		cout << "5 card" << endl;
-		
+
 		card5.getComponent<SpriteComponent>().shown();
 		flags.Show5Card = false;
 		flags.EnemyMove = true;
@@ -542,21 +532,16 @@ void Round(float deltaTime) {
 		currentBet[1] = 0;
 		enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
 		enemy_card2.getComponent<SpriteComponent>().changeSprite(players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
-		for (int i = 0; i < players_num; i++) {
-			hands.push_back(combine(table, players, i));
-		}
-		if (!flags.ResultCalc) {
+		if (!flags.ResultCalc) { //Calculate the results of the round
+			for (int i = 0; i < players_num; i++) {
+				hands.push_back(combine(table, players, i));
+			}
 			Result(scores, hands);
 			flags.ResultCalc = true;
 		}
 		if (scores[0].score < scores[1].score || scores[0].tieWin) {
 			if (pool > 0) {
-				money_transfer_anim += deltaTime;
-				if (money_transfer_anim >= (0.033f)) {
-					money_transfer_anim = 0;
-					pool--;
-					money[0]++;
-				}
+				MoneyTransfer(money[0], deltaTime);
 				return;
 			}
 			else {
@@ -565,12 +550,7 @@ void Round(float deltaTime) {
 		}
 		else if (scores[0].score > scores[1].score || scores[1].tieWin) {
 			if (pool > 0) {
-				money_transfer_anim += deltaTime;
-				if (money_transfer_anim >= (0.05f)) {
-					money_transfer_anim = 0;
-					pool--;
-					money[1]++;
-				}
+				MoneyTransfer(money[1], deltaTime);
 				return;
 			}
 			else {
@@ -578,15 +558,15 @@ void Round(float deltaTime) {
 			}
 		}
 		pool = 0;
-		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
-		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 
 		flags.ResultCalc = false;
 		flags.endRound = false;
-		flags.GameEnded = false;
 		flags.NextRound = true;
 	}
 }
+
+
+
 
 float licznik;
 
@@ -596,11 +576,13 @@ void Game::update(float deltaTime)
 	Mouse.getComponent<PositionComponent>().x(x / r_scale - 1);
 	Mouse.getComponent<PositionComponent>().y(y / r_scale);
 	manager.update();
-	if (!flags.GameEnded) {
-		HandleBetButtons();
-	}
-	else {
+	if (flags.GameEnded) {
+		BigBlind.getComponent<SpriteComponent>().hidden();
+		SmallBlind.getComponent<SpriteComponent>().hidden();
 		return;
+	}
+	else if (flags.HandleButtons) {
+		HandleBetButtons();
 	}
 	if (flags.StartGame) {
 		if (Start_button.getComponent<MouseController>().down) {
@@ -627,8 +609,10 @@ void Game::update(float deltaTime)
 		}
 		licznik += deltaTime;
 		if (licznik < 1) {
+			flags.HandleButtons = false;
 			return;
 		}
+		flags.HandleButtons = true;
 		licznik = 0;
 		pool = 0;
 		card1.getComponent<SpriteComponent>().hidden();
@@ -636,10 +620,11 @@ void Game::update(float deltaTime)
 		card3.getComponent<SpriteComponent>().hidden();
 		card4.getComponent<SpriteComponent>().hidden();
 		card5.getComponent<SpriteComponent>().hidden();
-
+		scores[0].ResetScore();
+		scores[1].ResetScore();
+		hands.clear();
+		ResetIgnoreHands();
 		NextCards(Deck);
-		enemy_card1.getComponent<SpriteComponent>().changeSprite(0, 13);
-		enemy_card2.getComponent<SpriteComponent>().changeSprite(0, 13);
 		ResetBlinds();
 		if (bigblind == 0) {
 			bigblind = 1;
@@ -656,7 +641,8 @@ void Game::update(float deltaTime)
 			SmallBlindNote.getComponent<PositionComponent>().x(139);
 			SmallBlindNote.getComponent<PositionComponent>().y(3);
 		}
-		currentBB *= 2;
+		currentBB *= 2; //doubling big blind every round
+		
 		flags.NextRoundFlags();
 		flags.NextRound = false;
 	}

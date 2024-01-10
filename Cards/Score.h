@@ -15,4 +15,17 @@ public:
 	int handRank = 0; //Highest card in the hand
 
 	Score() = default;
+
+	void ResetScore() {
+		score = 10; 
+		tieWin = false; 
+		maxStraightRank = 0; 
+		maxPokerRank = 0; 
+		pairRank = 0; 
+		threeRank = 0; 
+		fourRank = 0; 
+		flushSuit = '\0';
+		maxFlushRank = 0; 
+		handRank = 0;
+	}
 };
