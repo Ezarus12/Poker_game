@@ -6,7 +6,7 @@ public:
     bool GameEnded = false;
     bool EnemyMove = false;
     bool BlindsCon = false; //Condition to the action related to blinds
-
+    bool NextRound = false;
     //flags for displaying cards on the table
     bool Show3Cards = false;
     bool Show4Card = false;
@@ -22,5 +22,14 @@ public:
     //Animation flags
     
 
-
+    void NextRoundFlags() {
+        Show3Cards = false;
+        Show4Card = false;
+        Show5Card = false;
+        firstBet = true;
+        secondBet = false;
+        thirdBet = false;
+        fourthBet = false;
+        endRound = false;
+    }
 };

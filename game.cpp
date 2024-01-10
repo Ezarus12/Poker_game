@@ -7,7 +7,7 @@
 #include "Cards/Components.h"
 #include "text.h"
 #include <string>
-
+#include "Player.h"
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 SDL_Texture* background;
@@ -480,9 +480,6 @@ void Round(float deltaTime) {
 		}
 	}
 
-	if (!flags.GameEnded) {
-		HandleBetButtons();
-	}
 
 	//Enemy move
 	if (currentBet[0] > currentBet[1]) {
@@ -553,9 +550,12 @@ void Round(float deltaTime) {
 		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 
 		flags.endRound = false;
-		flags.GameEnded = true;
+		flags.GameEnded = false;
+		flags.NextRound = true;
 	}
 }
+
+float licznik;
 
 void Game::update(float deltaTime)
 {
@@ -563,6 +563,20 @@ void Game::update(float deltaTime)
 	Mouse.getComponent<PositionComponent>().x(x / r_scale - 1);
 	Mouse.getComponent<PositionComponent>().y(y / r_scale);
 	manager.update();
+	if (!flags.GameEnded) {
+		HandleBetButtons();
+	}
+	else {
+		return;
+	}
+	if (money[0] <= 0) {
+		cout << "Player Lost";
+		flags.GameEnded = true;
+	}
+	if (money[1] <= 0) {
+		cout << "Player Won";
+		flags.GameEnded = true;
+	}
 	if (flags.StartGame) {
 		if (Start_button.getComponent<MouseController>().down) {
 			Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button_c.png");
@@ -577,23 +591,28 @@ void Game::update(float deltaTime)
 		
 		return;
 	}
-
-	Round(deltaTime);
-	
-	/*if (nextround)
+	if (flags.NextRound)
 	{
+		licznik += deltaTime;
+		if (licznik < 1) {
+			return;
+		}
+		licznik = 0;
+		pool = 0;
 		card1.getComponent<SpriteComponent>().hidden();
 		card2.getComponent<SpriteComponent>().hidden();
 		card3.getComponent<SpriteComponent>().hidden();
 		card4.getComponent<SpriteComponent>().hidden();
 		card5.getComponent<SpriteComponent>().hidden();
 
+		NextCards(Deck);
 		enemy_card1.getComponent<SpriteComponent>().changeSprite(0, 13);
 		enemy_card2.getComponent<SpriteComponent>().changeSprite(0, 13);
 
-		NextCards(Deck);
-		nextround = false;
-	}*/
+		flags.NextRoundFlags();
+		flags.NextRound = false;
+	}
+	Round(deltaTime);
 	
 	
 
