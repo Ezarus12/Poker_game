@@ -24,7 +24,7 @@ vector<vector<Card>> hands; //vector storing vectors for each player containg ha
 
 vector<Score> scores; //vector storing score for each player and corresponding highest card
 
-int money[2] = {100, 100};
+int money[2] = {350, 350};
 
 int currentBet[2] = { 0,0 };
 
@@ -451,7 +451,6 @@ void Blinds(int Blind) {
 	}
 
 }
-
 void Round(float deltaTime) {
 	CowboyAnim(deltaTime);
 	HandCardsHover(deltaTime);
@@ -466,7 +465,10 @@ void Round(float deltaTime) {
 	if (flags.BlindsCon) {
 		TurningBlinds(deltaTime);
 	}
-
+	if (flags.TakeBlinds) { 
+		Blinds(bigblind);
+		flags.TakeBlinds = false;	
+	}
 	// showing token notes
 	if (flags.BlindsCon) {
 		//Showing token notes
@@ -608,7 +610,6 @@ void Game::update(float deltaTime)
 				Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button.png");
 				flags.StartGame = false;
 				Start_button.destroy();
-				Blinds(bigblind);
 			}
 		}
 		
@@ -639,7 +640,23 @@ void Game::update(float deltaTime)
 		NextCards(Deck);
 		enemy_card1.getComponent<SpriteComponent>().changeSprite(0, 13);
 		enemy_card2.getComponent<SpriteComponent>().changeSprite(0, 13);
+		ResetBlinds();
+		if (bigblind == 0) {
+			bigblind = 1;
 
+			BigBlindNote.getComponent<PositionComponent>().x(139);
+			BigBlindNote.getComponent<PositionComponent>().y(3);
+			SmallBlindNote.getComponent<PositionComponent>().x(190);
+			SmallBlindNote.getComponent<PositionComponent>().y(136);
+		}
+		else if (bigblind == 1) {
+			bigblind = 0;
+			BigBlindNote.getComponent<PositionComponent>().x(200);
+			BigBlindNote.getComponent<PositionComponent>().y(136);
+			SmallBlindNote.getComponent<PositionComponent>().x(139);
+			SmallBlindNote.getComponent<PositionComponent>().y(3);
+		}
+		currentBB *= 2;
 		flags.NextRoundFlags();
 		flags.NextRound = false;
 	}
@@ -664,6 +681,7 @@ void Game::update(float deltaTime)
 		}
 		
 	}
+
 	Round(deltaTime);
 
 	//SPRITE DRAGGING

@@ -154,7 +154,25 @@ inline void TurningBlinds(float deltaTime)
 	}
 }
 
+inline void ResetBlinds() {
+	BigBlind.getComponent<SpriteComponent>().changeSprite(0, 0);
+	BigBlind.getComponent<PositionComponent>().x(160);
+	BigBlind.getComponent<PositionComponent>().y(90);
 
+	SmallBlind.getComponent<SpriteComponent>().changeSprite(0, 0);
+	SmallBlind.getComponent<PositionComponent>().x(160);
+	SmallBlind.getComponent<PositionComponent>().y(90);
+
+	xB = 160;
+	yB = 90;
+
+	xS = 160;
+	yS = 90;
+	Turn_row = true; 
+
+	Turn_stop = false; 
+	Turn_spirte = 0;
+}
 //Hand cards hover animation
 
 float Hand_card_h1 = 148;
