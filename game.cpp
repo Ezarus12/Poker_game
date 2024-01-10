@@ -134,7 +134,12 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 	back_card.addComponent<PositionComponent>(12, card_y);
 	back_card.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, 0, 13);
+	back_card.addComponent<MouseController>();
+	back_card.getComponent<MouseController>().setHover();
 
+	CardBorder.addComponent<PositionComponent>(11, card_y-1);
+	CardBorder.addComponent<SpriteComponent>("assets/Card_Border.png", 34, 50);
+	CardBorder.getComponent<SpriteComponent>().hidden();
 
 	card1.addComponent<PositionComponent>(card_x, card_y);
 	card1.addComponent<SpriteComponent>("assets/Deck.png", 32, 48, table[0].get_suit_int(), table[0].get_rank() - 2);
@@ -193,7 +198,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
 	money_text.getComponent<TextComponent>().setNum(&money[0]);
 
-	money_text.addComponent<PositionComponent>(290, 7);
+	money_text.addComponent<PositionComponent>(132, 24);
 	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
 	money_text.getComponent<TextComponent>().setNum(&money[1]);
 
@@ -201,7 +206,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	bet_text.addComponent<TextComponent>("assets/font.ttf", 13, std::to_string(0), red);
 	bet_text.getComponent<TextComponent>().setNum(&bet);
 
-	pool_text.addComponent<PositionComponent>(132, 24);
+	pool_text.addComponent<PositionComponent>(290, 7);
 	pool_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
 	pool_text.getComponent<TextComponent>().setNum(&pool);
 
@@ -324,6 +329,8 @@ int currentBB = 10; //current Big Blind value
 
 int lowestBet;
 
+float money_transfer_anim;
+
 void HandleBetButtons() {
 
 	//Bet button
@@ -365,7 +372,7 @@ void HandleBetButtons() {
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
 			BB_add_big.getComponent<MouseController>().down = false;
 			BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big.png");
-			if (bet <= 989) {
+			if (bet <= 989 && bet  <= money[0] - 10) {
 				bet += 10;
 			}
 		}
@@ -377,7 +384,7 @@ void HandleBetButtons() {
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
 			BB_add_small.getComponent<MouseController>().down = false;
 			BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small.png");
-			if (bet <= 998) {
+			if (bet <= 998 && bet <= money[0] - 1) {
 				bet += 1;
 			}
 		}
@@ -536,19 +543,43 @@ void Round(float deltaTime) {
 		for (int i = 0; i < players_num; i++) {
 			hands.push_back(combine(table, players, i));
 		}
-		Result(scores, hands);
-		cout << scores[0].score << "  " << scores[1].score << endl;
-		if (scores[0].score < scores[1].score) {
-			cout << "Player Won!" << endl;
-			money[0] += pool;
+		if (!flags.ResultCalc) {
+			Result(scores, hands);
+			flags.ResultCalc = true;
 		}
-		else if (scores[0].score > scores[1].score) {
-			cout << "Enemy Won!" << endl;
-			money[1] += pool;
+		if (scores[0].score < scores[1].score || scores[0].tieWin) {
+			if (pool > 0) {
+				money_transfer_anim += deltaTime;
+				if (money_transfer_anim >= (0.033f)) {
+					money_transfer_anim = 0;
+					pool--;
+					money[0]++;
+				}
+				return;
+			}
+			else {
+				cout << "Player Won!" << endl;
+			}
 		}
+		else if (scores[0].score > scores[1].score || scores[1].tieWin) {
+			if (pool > 0) {
+				money_transfer_anim += deltaTime;
+				if (money_transfer_anim >= (0.05f)) {
+					money_transfer_anim = 0;
+					pool--;
+					money[1]++;
+				}
+				return;
+			}
+			else {
+				cout << "Enemy Won!" << endl;
+			}
+		}
+		pool = 0;
 		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 		cout << "Player money: " << money[0] << " Enemy money: " << money[1] << endl;
 
+		flags.ResultCalc = false;
 		flags.endRound = false;
 		flags.GameEnded = false;
 		flags.NextRound = true;
@@ -569,14 +600,6 @@ void Game::update(float deltaTime)
 	else {
 		return;
 	}
-	if (money[0] <= 0) {
-		cout << "Player Lost";
-		flags.GameEnded = true;
-	}
-	if (money[1] <= 0) {
-		cout << "Player Won";
-		flags.GameEnded = true;
-	}
 	if (flags.StartGame) {
 		if (Start_button.getComponent<MouseController>().down) {
 			Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button_c.png");
@@ -593,6 +616,14 @@ void Game::update(float deltaTime)
 	}
 	if (flags.NextRound)
 	{
+		if (money[0] <= 0) {
+			cout << "Player Lost";
+			flags.GameEnded = true;
+		}
+		if (money[1] <= 0) {
+			cout << "Player Won";
+			flags.GameEnded = true;
+		}
 		licznik += deltaTime;
 		if (licznik < 1) {
 			return;
@@ -612,10 +643,28 @@ void Game::update(float deltaTime)
 		flags.NextRoundFlags();
 		flags.NextRound = false;
 	}
-	Round(deltaTime);
-	
-	
 
+	if (back_card.getComponent<MouseController>().hovered) {
+		CardBorder.getComponent<SpriteComponent>().shown();
+	}
+	else {
+		CardBorder.getComponent<SpriteComponent>().hidden();
+
+	}
+	if (back_card.getComponent<MouseController>().down) {
+		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			back_card.getComponent<MouseController>().down = false;
+			flags.RankingShown = !flags.RankingShown;
+			if (flags.RankingShown) {
+				PokerRanking.getComponent<SpriteComponent>().shown();
+			}
+			else {
+				PokerRanking.getComponent<SpriteComponent>().hidden();
+			}
+		}
+		
+	}
+	Round(deltaTime);
 
 	//SPRITE DRAGGING
 

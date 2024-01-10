@@ -4,7 +4,7 @@
 class Score {
 public:
 	int score = 10; //Hand combination 1-Royal Poker... 10-Highest card
-
+	bool tieWin = false; //Does the player won in the Tie (same hands)
 	int maxStraightRank = 0; //Highest card in the Straight
 	int maxPokerRank = 0; //Highest card in the Poker
 	int pairRank = 0; //Highest pair

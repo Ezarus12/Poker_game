@@ -41,6 +41,8 @@ auto& BigBlindNote(manager.addEntity());
 auto& SmallBlind(manager.addEntity());
 auto& SmallBlindNote(manager.addEntity());
 
+auto& CardBorder(manager.addEntity());
+
 //Start button
 auto& Start_button(manager.addEntity());
 

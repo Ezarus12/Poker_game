@@ -7,6 +7,8 @@ public:
     bool EnemyMove = false;
     bool BlindsCon = false; //Condition to the action related to blinds
     bool NextRound = false;
+    bool ResultCalc = false; //Is the the result of the round caluclated
+
     //flags for displaying cards on the table
     bool Show3Cards = false;
     bool Show4Card = false;
@@ -20,7 +22,7 @@ public:
     bool endRound = false;
 
     //Animation flags
-    
+    bool RankingShown = false;
 
     void NextRoundFlags() {
         Show3Cards = false;
