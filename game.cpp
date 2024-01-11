@@ -8,6 +8,7 @@
 #include "text.h"
 #include <string>
 #include "Player.h"
+#include "Sound/SoundEffects.h"
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 SDL_Texture* background;
@@ -36,8 +37,7 @@ int bet = 0;
 
 SDL_Color red = { 148,0,0,255 };
 
-
-
+SoundEffects Sound_effects;
 #include "Animations.h"
 
 Game::Game()
@@ -49,7 +49,7 @@ Game::~Game()
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
-
+	
 	//Initializing subsystem, window and renderer
 	{
 		r_scale = width / 320;
@@ -100,6 +100,14 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	}
 
 	bigblind = Random(0, 1);
+
+	//Sound
+
+	Sound_effects.addSoundEffect("StartButton", "sounds/Start_button_sfx.wav");
+	Sound_effects.addSoundEffect("ClickButton", "sounds/Button_click_sfx.wav");
+
+
+
 
 	//ECS 
 
@@ -323,6 +331,7 @@ void HandleBetButtons() {
 	if (BB_center.getComponent<MouseController>().down) {
 		BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			Sound_effects.playSoundEffect("ClickButton", 0);
 			BB_center.getComponent<MouseController>().down = false;
 			BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center.png");
 			pool += bet;
@@ -354,8 +363,13 @@ void HandleBetButtons() {
 
 	//Plus 10 button
 	if (BB_add_big.getComponent<MouseController>().down) {
+		if (flags.buttonClickSFX) {
+			Sound_effects.playSoundEffect("ClickButton", 0);
+			flags.buttonClickSFX = false;
+		}
 		BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			flags.buttonClickSFX = true;
 			BB_add_big.getComponent<MouseController>().down = false;
 			BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big.png");
 			if (bet <= 989 && bet  <= money[0] - 10) {
@@ -366,8 +380,13 @@ void HandleBetButtons() {
 
 	//Plus 1 button
 	if (BB_add_small.getComponent<MouseController>().down) {
+		if (flags.buttonClickSFX) {
+			Sound_effects.playSoundEffect("ClickButton", 0);
+			flags.buttonClickSFX = false;
+		}
 		BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			flags.buttonClickSFX = true;
 			BB_add_small.getComponent<MouseController>().down = false;
 			BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small.png");
 			if (bet <= 998 && bet <= money[0] - 1) {
@@ -378,8 +397,13 @@ void HandleBetButtons() {
 
 	//Minus 10 button
 	if (BB_sub_big.getComponent<MouseController>().down) {
+		if (flags.buttonClickSFX) {
+			Sound_effects.playSoundEffect("ClickButton", 0);
+			flags.buttonClickSFX = false;
+		}
 		BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			flags.buttonClickSFX = true;
 			BB_sub_big.getComponent<MouseController>().down = false;
 			BB_sub_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_big.png");
 			if (bet >= 10 && bet - 10 >= lowestBet) {
@@ -390,8 +414,13 @@ void HandleBetButtons() {
 
 	//Minus 1 button
 	if (BB_sub_small.getComponent<MouseController>().down) {
+		if (flags.buttonClickSFX) {
+			Sound_effects.playSoundEffect("ClickButton", 0);
+			flags.buttonClickSFX = false;
+		}
 		BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			flags.buttonClickSFX = true;
 			BB_sub_small.getComponent<MouseController>().down = false;
 			BB_sub_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_sub_small.png");
 			if (bet > lowestBet) {
@@ -404,6 +433,7 @@ void HandleBetButtons() {
 	if (Fold_button.getComponent<MouseController>().down) {
 		Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
+			Sound_effects.playSoundEffect("ClickButton", 0);
 			Fold_button.getComponent<MouseController>().down = false;
 			Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button.png");
 			cout << "Player folded";
@@ -440,7 +470,7 @@ void Blinds(int Blind) {
 
 void MoneyTransfer(int& i, float deltaTime) {
 	money_transfer_anim += deltaTime;
-	if (money_transfer_anim >= (0.33f)/pool) {
+	if (money_transfer_anim >= (0.33f)/pool) { //Transfer money from pool to player/enemy. Larger the pool faster the transfer occurs
 		money_transfer_anim = 0;
 		pool--;
 		i++;
@@ -588,6 +618,7 @@ void Game::update(float deltaTime)
 		if (Start_button.getComponent<MouseController>().down) {
 			Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button_c.png");
 			if (event.type == SDL_MOUSEBUTTONUP) {
+				Sound_effects.playSoundEffect("StartButton", 0);
 				Start_button.getComponent<MouseController>().down = false;
 				Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button.png");
 				flags.StartGame = false;

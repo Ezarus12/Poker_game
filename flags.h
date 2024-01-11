@@ -26,6 +26,10 @@ public:
     //Animation flags
     bool RankingShown = false;
 
+
+    //Audio flags
+    bool buttonClickSFX = true;
+
     void NextRoundFlags() {
         BlindsCon = false;
         TakeBlinds = true;
