@@ -41,6 +41,8 @@ SDL_Color red = { 148,0,0,255 };
 SoundEffects Sound_effects;
 #include "Animations.h"
 
+Enemy enemy;
+
 Game::Game()
 {}
 
@@ -100,14 +102,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		Deck.erase(Deck.begin() + r);
 	}
 
+	enemy.set_maxHandRank(scores[1].handRank);
+	enemy.set_money(&money[1]);
+
 	bigblind = Random(0, 1);
 
 	//Sound
-
+	Sound_effects.addSoundEffect("CoinDrop", "sounds/Coin_Drop_Loop.wav");
 	Sound_effects.addSoundEffect("StartButton", "sounds/Start_button_sfx.wav");
 	Sound_effects.addSoundEffect("ClickButton", "sounds/Button_click_sfx.wav");
-
-
 
 
 	//ECS 
@@ -447,7 +450,7 @@ void HandleBetButtons() {
 			Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button.png");
 			cout << "Player folded";
 			Fold_button.getComponent<MouseController>().down = false;
-			flags.NextRound = true;
+			flags.PlayerFolded = true;
 		}
 	}
 }
@@ -484,6 +487,27 @@ void Round(float deltaTime) {
 	CowboyAnim(deltaTime);
 	HandCardsHover(deltaTime);
 	
+	//Folds
+	if (flags.PlayerFolded) {
+		if (pool > 0) {
+			MoneyTransfer(money[1], deltaTime);
+			return;
+		}
+		else {
+			flags.PlayerFolded = false;
+			flags.NextRound = true;
+		}
+	}
+	if (flags.EnemyFolded) {
+		if (pool > 0) {
+			MoneyTransfer(money[0], deltaTime);
+			return;
+		}
+		else {
+			flags.EnemyFolded = false;
+			flags.NextRound = true;
+		}
+	}
 
 	//toosing blind tokens
 	if (!flags.BlindsCon) {
@@ -520,13 +544,21 @@ void Round(float deltaTime) {
 
 
 	//Enemy move
-	if (currentBet[0] > currentBet[1]) {
-		while (currentBet[0] != currentBet[1]) {
-			money[1]--;
-			currentBet[1]++;
-			pool++;
-		}
+	if (flags.EnemyMove) {
+		vector<Card> cards = combine(table, players, 1);
+		enemy.set_score(win_Simplified(cards));
+		int Bet_enemy = enemy.Decide(currentBet[0]);
+		money[1] -= Bet_enemy;
+		currentBet[1] += Bet_enemy;
+		pool += Bet_enemy;
+		flags.EnemyMove = false;
 	}
+
+	/*while (currentBet[0] != currentBet[1]) {
+		money[1]--;
+		currentBet[1]++;
+		pool++;
+	}*/
 
 	//Displaying first 3 cards
 	if (flags.Show3Cards) {

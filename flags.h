@@ -23,6 +23,10 @@ public:
     bool fourthBet = false;
     bool endRound = false;
 
+    //Fold flags
+    bool PlayerFolded = false;
+    bool EnemyFolded = false;
+
     //Animation flags
     bool RankingShown = false;
 
