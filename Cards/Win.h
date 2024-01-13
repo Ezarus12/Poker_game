@@ -105,22 +105,24 @@ int SameRanks(const vector<Card>& cards, Score& s) {
 			score = min(score, 7);//three of kind
 
 			//check if the cards also contains a pair making it a "full house"
-			for (const Card& card : cards) {
-				if (card.get_rank() == s.threeRank) { //Skip loop 
-					continue;
-				}
-				else {
-					// Count occurrences of cards with the same rank
-					int count = count_if(cards.begin(), cards.end(), [&](const Card& c) {
-						return c.get_rank() == card.get_rank();
-						});
-
-					if (count >= 2) {
-						score = min(score, 4); //full house
-						s.pairRank = card.get_rank();
+			if (!ignoreHand[3]) {
+				for (const Card& card : cards) {
+					if (card.get_rank() == s.threeRank) { //Skip loop 
+						continue;
 					}
-				}
+					else {
+						// Count occurrences of cards with the same rank
+						int count = count_if(cards.begin(), cards.end(), [&](const Card& c) {
+							return c.get_rank() == card.get_rank();
+							});
 
+						if (count >= 2) {
+							score = min(score, 4); //full house
+							s.pairRank = card.get_rank();
+						}
+					}
+
+				}
 			}
 		}
 	}

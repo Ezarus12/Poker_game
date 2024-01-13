@@ -9,6 +9,7 @@
 #include <string>
 #include "Player.h"
 #include "Sound/SoundEffects.h"
+#include "EnemyAI.h"
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 SDL_Texture* background;
@@ -159,7 +160,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 
 	cowboy.addComponent<PositionComponent>(60, 0);
-	cowboy.addComponent<SpriteComponent>("assets/Cowboy_Sheet.png", 60, 60);
+	cowboy.addComponent<SpriteComponent>("assets/Sheriff_Sheet.png", 60, 60);
 	cowboy.addComponent<MouseController>();
 
 	enemy_card1.addComponent<PositionComponent>(192, 10);
@@ -325,6 +326,15 @@ int lowestBet;
 
 float money_transfer_anim;
 
+void MoneyTransfer(int& i, float deltaTime) {
+	money_transfer_anim += deltaTime;
+	if (money_transfer_anim >= (0.33f) / pool) { //Transfer money from pool to player/enemy. Larger the pool faster the transfer occurs
+		money_transfer_anim = 0;
+		pool--;
+		i++;
+	}
+}
+
 void HandleBetButtons() {
 
 	//Bet button
@@ -434,9 +444,9 @@ void HandleBetButtons() {
 		Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button_c.png");
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
 			Sound_effects.playSoundEffect("ClickButton", 0);
-			Fold_button.getComponent<MouseController>().down = false;
 			Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button.png");
 			cout << "Player folded";
+			Fold_button.getComponent<MouseController>().down = false;
 			flags.NextRound = true;
 		}
 	}
@@ -468,14 +478,7 @@ void Blinds(int Blind) {
 
 }
 
-void MoneyTransfer(int& i, float deltaTime) {
-	money_transfer_anim += deltaTime;
-	if (money_transfer_anim >= (0.33f)/pool) { //Transfer money from pool to player/enemy. Larger the pool faster the transfer occurs
-		money_transfer_anim = 0;
-		pool--;
-		i++;
-	}
-}
+
 
 void Round(float deltaTime) {
 	CowboyAnim(deltaTime);
@@ -686,6 +689,7 @@ void Game::update(float deltaTime)
 
 	}
 	if (back_card.getComponent<MouseController>().down) {
+		CardBorder.getComponent<SpriteComponent>().hidden();
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
 			back_card.getComponent<MouseController>().down = false;
 			flags.RankingShown = !flags.RankingShown;
