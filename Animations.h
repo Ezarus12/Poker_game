@@ -152,6 +152,9 @@ inline void TurningBlinds(float deltaTime)
 			Turn_row = !Turn_row;
 		}
 	}
+	else {
+		flags.HandleButtons = true;
+	}
 }
 
 inline void ResetBlinds() {
@@ -212,4 +215,21 @@ inline void HandCardsHover(float deltaTime) {
 
 	}
 
+}
+
+float money_transfer_anim;
+
+inline void MoneyTransfer(int& i, float deltaTime) {
+	money_transfer_anim += deltaTime;
+	if (money_transfer_anim >= (0.33f) / pool) { //Transfer money from pool to player/enemy. Larger the pool faster the transfer occurs
+		money_transfer_anim = 0;
+		pool--;
+		i++;
+	}
+}
+
+inline void UpdateCursor() {
+	SDL_GetMouseState(&x, &y);
+	Mouse.getComponent<PositionComponent>().x(x / r_scale - 1);
+	Mouse.getComponent<PositionComponent>().y(y / r_scale);
 }

@@ -7,8 +7,8 @@
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
 
-using namespace std;
 
+using namespace std;
 
 class Game {
 public:
