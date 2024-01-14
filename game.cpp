@@ -2,10 +2,8 @@
 #include "flags.h"
 #include "game.h"
 #include "TextureManager.h"
-#include "GameObject.h"
 #include "ECS/Components.h"
 #include "Cards/Components.h"
-#include "text.h"
 #include <string>
 #include "Player.h"
 #include "Sound/SoundEffects.h"
