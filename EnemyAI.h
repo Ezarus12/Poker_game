@@ -8,6 +8,7 @@ extern void MoneyTransfer(int& i, float deltaTime);
 class Enemy {
 private:
 	int score;
+	int score_table;
 	int maxHandRank;
 	int* money;
 public:
@@ -20,6 +21,9 @@ public:
 		maxHandRank = r;
 	}
 	void set_score(int s) {
+		score = s;
+	}
+	void set_score_table(int s) {
 		score = s;
 	}
 	
@@ -48,8 +52,11 @@ public:
 				return *money * (Random(30, 50) * 0.01);
 			}
 		}
-		else if (bet <= currentBB) {
-
+		else if (bet == 10) {
+			cout << "Dyszka";
+		}
+		else {
+			return bet;
 		}
 
 	}

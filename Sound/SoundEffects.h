@@ -20,6 +20,8 @@ public:
 		{
 			cout << "Couldn't init audio: " << Mix_GetError() << endl;
 		}
+
+		Mix_Volume(3, 10);
 	}
 
 	void addSoundEffect(string name, const char* path) {
@@ -32,5 +34,13 @@ public:
 
 	void playSoundEffect(string name, int loop) {
 		Mix_PlayChannel(-1, SoundEffectsMap.at(name), loop);
+	}
+
+	void playMusic(string name, int loop) {
+		Mix_PlayChannel(3, SoundEffectsMap.at(name), loop);
+	}
+
+	void playSoundEffectTime(string name, int time) { //plays specific sound for maximum time
+		Mix_PlayChannelTimed(-1, SoundEffectsMap.at(name), -1, time);
 	}
 };

@@ -220,8 +220,16 @@ inline void HandCardsHover(float deltaTime) {
 float money_transfer_anim;
 
 inline void MoneyTransfer(int& i, float deltaTime) {
+	if (flags.PlayCoinLoop) {
+		cout << "jestem";
+		Sound_effects.playSoundEffectTime("CoinDrop", ((0.02f) * pool * 1000) - 40);
+		flags.PlayCoinLoop = false;
+	}
 	money_transfer_anim += deltaTime;
-	if (money_transfer_anim >= (0.33f) / pool) { //Transfer money from pool to player/enemy. Larger the pool faster the transfer occurs
+	if (pool == 20) {
+		Sound_effects.playSoundEffect("SingleCoinDrop", 0);
+	}
+	if (money_transfer_anim >= (0.02f)) { //Transfer money from pool to player/enemy. Larger the pool faster the transfer occurs
 		money_transfer_anim = 0;
 		pool--;
 		i++;

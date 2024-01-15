@@ -29,10 +29,11 @@ public:
 
     //Animation flags
     bool RankingShown = false;
-
+    
 
     //Audio flags
     bool buttonClickSFX = true;
+    bool PlayCoinLoop = true;
 
     void NextRoundFlags() {
         BlindsCon = false;
@@ -46,5 +47,6 @@ public:
         fourthBet = false;
         endRound = false;
         HandleButtons = false;
+        PlayCoinLoop = true;
     }
 };

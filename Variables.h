@@ -22,7 +22,7 @@ int Random(int x, int y) { //Generating random number from x to y
 
 int RoundCounter = 0; //counts how many rounds have been played
 
-int money[2] = { 350, 350 }; //Players money
+int money[2] = { 100, 100 }; //Players money
 
 int currentBet[2] = { 0,0 }; //players current bets
 

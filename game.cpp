@@ -292,31 +292,58 @@ void HandleBetButtons() {
 	}
 }
 
-void Blinds(int Blind) {
-	switch (Blind) {
-		case 0: //Player got the Big Blind
-			money[0] -= currentBB;
-			currentBet[0] = currentBB;
-			money[1] -= currentBB/2;
-			currentBet[1] = currentBB/2;
-			for (int i = 0; i < players_num; i++) {
-				pool += currentBet[i];
-			}
-			break;
-		case 1: //Enemy got the Big Blind
-			money[1] -= currentBB;
-			currentBet[1] = currentBB;
-			money[0] -= currentBB / 2;
-			currentBet[0] = currentBB / 2;
-			for (int i = 0; i < players_num; i++) {
-				pool += currentBet[i];
-			}
-			bet = currentBet[1] - currentBet[0];
-			lowestBet = bet;
-			break;
+void TakeBlindMoney(int p) {
+	if (money[p] < currentBB) 
+	{
+		currentBet[p] = money[p];
+		money[p] = 0;
+	}
+	else {
+		money[p] -= currentBB;
+		currentBet[p] = currentBB;
+	}
+	if (p == 1) //enemy got the big blind
+	{
+		if (money[p - 1] < currentBB / 2)
+		{
+			currentBet[p - 1] = money[p - 1];
+			money[p - 1] = 0;
+			lowestBet = 0;
+		}
+		else
+		{
+			money[p - 1] -= currentBB / 2;
+			currentBet[p - 1] = currentBB / 2;
+			bet = lowestBet = currentBB / 2;
+
+		}
+	}
+	else //player got the big blind
+	{
+		if (money[p + 1] < currentBB / 2)
+		{
+			currentBet[p + 1] = money[p + 1];
+			money[p + 1] = 0;
+		}
+		else
+		{
+			money[p + 1] -= currentBB / 2;
+			currentBet[p + 1] = currentBB / 2;
+		}
+		
+	}
+	for (int i = 0; i < players_num; i++) {
+		pool += currentBet[i];
 	}
 
 }
+
+void Blinds(int Blind) {
+	TakeBlindMoney(Blind);
+
+}
+
+
 
 
 
@@ -382,6 +409,7 @@ void Round(float deltaTime) {
 
 	//Enemy move
 	if (flags.EnemyMove) {
+		enemy.set_score(win_Simplified(table));
 		vector<Card> cards = combine(table, players, 1);
 		enemy.set_score(win_Simplified(cards));
 		int Bet_enemy = enemy.Decide(currentBet[0]);
@@ -542,7 +570,8 @@ void Game::update(float deltaTime)
 		if (Start_button.getComponent<MouseController>().down) {
 			Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button_c.png");
 			if (event.type == SDL_MOUSEBUTTONUP) {
-				Sound_effects.playSoundEffect("StartButton", 0);
+				Sound_effects.playMusic("Music", -1);
+;				Sound_effects.playSoundEffect("StartButton", 0);
 				Start_button.getComponent<MouseController>().down = false;
 				Start_button.getComponent<SpriteComponent>().setTex("assets/Start_button.png");
 				flags.StartGame = false;
