@@ -15,8 +15,8 @@ public:
 	}
 
 	PositionComponent(int x, int y) {
-		xpos = x;
-		ypos = y;
+		xpos = float(x);
+		ypos = float(y);
 	}
 
 	void update() override

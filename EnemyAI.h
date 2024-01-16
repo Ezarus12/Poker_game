@@ -10,12 +10,12 @@ private:
 	int score;
 	int score_table;
 	int maxHandRank;
-	int* money;
+	int* mmoney;
 public:
 	Enemy() = default;
 
 	void set_money(int* m) {
-		money = m;
+		mmoney = m;
 	}
 	void set_maxHandRank(int r) {
 		maxHandRank = r;
@@ -40,16 +40,16 @@ public:
 				return Call();
 			}
 			else if (maxHandRank < 10 && score > 9) { //In the other 30% bet 5-10% of the money
-				return *money * (Random(5, 10) *0.01);
+				return *mmoney * (Random(5, 10) *0.01);
 			}
 			else if (maxHandRank > 10 && score > 9) { //If the handcard is greater then 10 bet 10-20% of the money
-				return *money * (Random(10, 20) * 0.01);
+				return *mmoney * (Random(10, 20) * 0.01);
 			}
 			else if (score <= 9 && score >= 6) {
-				return *money * (Random(15, 30) * 0.01);
+				return *mmoney * (Random(15, 30) * 0.01);
 			}
 			else {
-				return *money * (Random(30, 50) * 0.01);
+				return *mmoney * (Random(30, 50) * 0.01);
 			}
 		}
 		else if (bet == 10) {

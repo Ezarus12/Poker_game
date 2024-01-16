@@ -18,6 +18,10 @@ public:
 	Hand(Card _c1, Card _c2) : c1(_c1), c2(_c2) {
 	
 	}
+	/*Hand(Hand& h) {
+		c1 = h.c1;
+		c2 = h.c2;
+	}*/
 
 	friend std::ostream& operator<<(std::ostream& os, const Hand& h);
 

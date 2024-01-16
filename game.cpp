@@ -1,7 +1,7 @@
 #include "Variables.h"
 #include "flags.h"
 #include "game.h"
-#include "TextureManager.h"
+#include "TxtManager.h"
 #include "ECS/Components.h"
 #include "Cards/Components.h"
 #include <string>
@@ -24,7 +24,7 @@ vector<vector<Card>> hands; //vector storing vectors for each player containg ha
 
 vector<Score> scores; //vector storing score for each player and corresponding highest card
 
-
+//Player player;
 
 
 SoundEffects Sound_effects;
@@ -75,6 +75,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		background = TextureManager::LoadTexture("assets/back.png");
 	}
 
+	
 	//Create Deck
 	fill_deck(Deck);
 	//Draw hands and create score for each of the players
@@ -92,6 +93,14 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		table.push_back(Deck[r]);
 		Deck.erase(Deck.begin() + r);
 	}
+
+	//Init player
+	/*player.hand = draw(Deck);
+	player.money = 100;
+
+	enemy.hand = draw(Deck);
+	enemy.money = 100;*/
+
 
 	enemy.set_maxHandRank(scores[1].handRank);
 	enemy.set_money(&money[1]);
