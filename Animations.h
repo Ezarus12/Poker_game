@@ -241,3 +241,20 @@ inline void UpdateCursor() {
 	Mouse.getComponent<PositionComponent>().x(x / r_scale - 1);
 	Mouse.getComponent<PositionComponent>().y(y / r_scale);
 }
+
+//VFX Animation
+float star1_timer;
+int star1_sprite = 0;
+
+inline void Star1_Animation(float deltaTime) {
+	star1_timer += deltaTime;
+	if (star1_timer >= 0.05) {
+		Star1.getComponent<SpriteComponent>().changeSprite(star1_sprite++, 0);
+		star1_timer = 0;
+		if (star1_sprite >= 12) {
+			star1_sprite = 0;
+			Star1.getComponent<PositionComponent>().x(Random(2, 50));
+			Star1.getComponent<PositionComponent>().y(Random(25, 35));
+		}
+	}
+}

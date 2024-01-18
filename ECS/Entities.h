@@ -49,6 +49,9 @@ auto& SmallBlindNote(manager.addEntity());
 
 auto& CardBorder(manager.addEntity());
 
+//VFX
+auto& Star1(manager.addEntity());
+
 //Start button
 auto& Start_button(manager.addEntity());
 
@@ -194,6 +197,9 @@ void InitEntities() {
 	SmallBlindNote.addComponent<SpriteComponent>("assets/SmallBlindNote.png", 51, 12);
 	SmallBlindNote.getComponent<SpriteComponent>().hidden();
 
+	//VFX
+	Star1.addComponent<PositionComponent>(15, 25);
+	Star1.addComponent<SpriteComponent>("assets/Star2.png", 11, 11);
 
 	//PokerRanking
 

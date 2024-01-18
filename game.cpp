@@ -564,7 +564,7 @@ void Game::update(float deltaTime)
 {
 	manager.update();
 	UpdateCursor();
-
+	Star1_Animation(deltaTime);
 	if (flags.GameEnded) {
 		BigBlind.getComponent<SpriteComponent>().hidden();
 		SmallBlind.getComponent<SpriteComponent>().hidden();

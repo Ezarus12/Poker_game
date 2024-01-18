@@ -50,6 +50,13 @@ public:
 		src_y = src_y_;
 	}
 
+	//void moveSpriteX(int x) { //moves SRC rect through sprite sheet by X axis
+	//	src_x = destx;
+	//}
+	//void moveSpriteY(int y) { //moves SRC rect through sprite sheet by Y axis
+	//	src_y = y;
+	//}
+
 	void hidden() {
 		show = false;
 	}
