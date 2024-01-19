@@ -77,6 +77,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 	
 	//Create Deck
+	Deck.reserve(sizeof(Card)* 52);
 	fill_deck(Deck);
 	//Draw hands and create score for each of the players
 	for (int i = 0; i < players_num; i++) {
