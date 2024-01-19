@@ -116,6 +116,7 @@ void InitEntities() {
 	cowboy.addComponent<PositionComponent>(60, 0);
 	cowboy.addComponent<SpriteComponent>("assets/Sheriff_Sheet.png", 60, 60);
 	cowboy.addComponent<MouseController>();
+	cowboy.addComponent<AnimationComponent>(120, 60);
 
 	//Bet buttons 
 	BB_sub_big.addComponent<PositionComponent>(132, 152);
@@ -200,6 +201,7 @@ void InitEntities() {
 	//VFX
 	Star1.addComponent<PositionComponent>(15, 25);
 	Star1.addComponent<SpriteComponent>("assets/Star2.png", 11, 11);
+	Star1.addComponent<AnimationComponent>(121, 11);
 
 	//PokerRanking
 

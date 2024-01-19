@@ -357,7 +357,7 @@ void Blinds(int Blind) {
 
 
 void Round(float deltaTime) {
-	CowboyAnim(deltaTime);
+	cowboy.getComponent<AnimationComponent>().LoopAnimation(1, deltaTime);
 	HandCardsHover(deltaTime);
 	
 	//Folds
@@ -563,8 +563,8 @@ void NextRound(float deltaTime) {
 void Game::update(float deltaTime)
 {
 	manager.update();
+	Star1.getComponent<AnimationComponent>().LoopAnimation(20, deltaTime);
 	UpdateCursor();
-	Star1_Animation(deltaTime);
 	if (flags.GameEnded) {
 		BigBlind.getComponent<SpriteComponent>().hidden();
 		SmallBlind.getComponent<SpriteComponent>().hidden();

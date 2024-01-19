@@ -5,8 +5,5 @@
 #include "SpriteComponent.h"
 #include "MouseController.h"
 #include "TextComponent.h"
+#include "AnimationComponent.h"
 
-
-
-
-//#include "Entities.h"
