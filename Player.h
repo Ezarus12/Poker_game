@@ -7,9 +7,10 @@
 class Player {
 public:
 	int money;
-	Hand hand;
-	Score score;
+	//Hand hand;
+	//Score score;
+	bool won;
 
-	Player();
+	Player() = default;
 
 };

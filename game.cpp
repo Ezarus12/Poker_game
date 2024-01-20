@@ -33,6 +33,7 @@ SoundEffects Sound_effects;
 #include "Animations.h"
 #include "UI.h"
 Enemy enemy;
+Player player;
 
 Game::Game()
 {}
@@ -517,10 +518,24 @@ void NextRound(float deltaTime) {
 		flags.GameEnded = true;
 	}
 	licznik += deltaTime;
-	if (licznik < 1) {
+	if (licznik < 3) {
+		//Add after implementing completed Player class
+		/*if (player.won) {
+
+		}
+		else {
+		EnemyWonBanner.getComponent<SpriteComponent>().shown();
+		}*/
+		Star1.getComponent<SpriteComponent>().shown();
+		Star1.getComponent<AnimationComponent>().LoopAnimation(20, deltaTime);
+		YouWonBanner.getComponent<SpriteComponent>().shown();
+
+		//main functionality
 		flags.HandleButtons = false;
 		return;
 	}
+	Star1.getComponent<SpriteComponent>().hidden();
+	YouWonBanner.getComponent<SpriteComponent>().hidden();
 	flags.HandleButtons = true;
 	licznik = 0;
 	pool = 0;
@@ -564,7 +579,6 @@ void NextRound(float deltaTime) {
 void Game::update(float deltaTime)
 {
 	manager.update();
-	Star1.getComponent<AnimationComponent>().LoopAnimation(20, deltaTime);
 	UpdateCursor();
 	if (flags.GameEnded) {
 		BigBlind.getComponent<SpriteComponent>().hidden();

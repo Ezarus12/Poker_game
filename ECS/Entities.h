@@ -49,8 +49,7 @@ auto& SmallBlindNote(manager.addEntity());
 
 auto& CardBorder(manager.addEntity());
 
-//VFX
-auto& Star1(manager.addEntity());
+
 
 //Start button
 auto& Start_button(manager.addEntity());
@@ -59,7 +58,15 @@ auto& Fold_button(manager.addEntity());
 
 auto& PokerRanking(manager.addEntity());
 
+//End round banners
+auto& YouWonBanner(manager.addEntity());
+
+//VFX
+auto& Star1(manager.addEntity());
+
 auto& Mouse(manager.addEntity());
+
+
 
 void InitEntities() {
 	
@@ -198,14 +205,23 @@ void InitEntities() {
 	SmallBlindNote.addComponent<SpriteComponent>("assets/SmallBlindNote.png", 51, 12);
 	SmallBlindNote.getComponent<SpriteComponent>().hidden();
 
-	//VFX
-	Star1.addComponent<PositionComponent>(15, 25);
-	Star1.addComponent<SpriteComponent>("assets/Star2.png", 11, 11);
-	Star1.addComponent<AnimationComponent>(121, 11);
+	
+	
 
 	//PokerRanking
 
 	PokerRanking.addComponent<PositionComponent>(70, 0);
 	PokerRanking.addComponent<SpriteComponent>("assets/Poker_hand_ranking.png", 180, 646);
 	PokerRanking.getComponent<SpriteComponent>().hidden();
+
+	//Round end banners
+	YouWonBanner.addComponent<PositionComponent>(0, 117);
+	YouWonBanner.addComponent<SpriteComponent>("assets/YouWonBanner.png", 320, 62);
+	YouWonBanner.getComponent<SpriteComponent>().hidden();
+
+	//VFX
+	Star1.addComponent<PositionComponent>(40, 140);
+	Star1.addComponent<SpriteComponent>("assets/Star2.png", 11, 11);
+	Star1.addComponent<AnimationComponent>(121, 11);
+	Star1.getComponent<SpriteComponent>().hidden();
 }
