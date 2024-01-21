@@ -23,6 +23,9 @@ public:
 		SpriteColumns = (ImgHeight / sprite->h()) -1;
 	}
 
+	void set_LoopSprite(int i) {
+		LoopSprite = i;
+	}
 
 	void LoopAnimation(int FPS, float deltaTime) {
 		LoopAnimTimer += deltaTime;

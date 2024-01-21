@@ -76,7 +76,22 @@ auto& YouWonBanner(manager.addEntity());
 //VFX
 auto& Star1(manager.addEntity());
 
+vector<Entity*> Stars1;
 
+//Creating 10 stars in one vector
+void InitStars1() {
+	for (int i = 0; i < 15; i++) {
+		auto& e = manager.addEntity();
+		e.addComponent<PositionComponent>();
+		e.getComponent<PositionComponent>().x(Random(0, 310));
+		e.getComponent<PositionComponent>().y(Random(122, 165));
+		e.addComponent<SpriteComponent>("assets/Star2.png", 11, 11);
+		e.addComponent<AnimationComponent>(121, 11);
+		e.getComponent<SpriteComponent>().hidden();
+		e.getComponent<AnimationComponent>().set_LoopSprite(Random(0,10));
+		Stars1.push_back(&e);
+	}
+}
 
 /***********************
 	  L A Y E R  3
@@ -242,5 +257,7 @@ void InitEntities() {
 	Star1.addComponent<SpriteComponent>("assets/Star2.png", 11, 11);
 	Star1.addComponent<AnimationComponent>(121, 11);
 	Star1.getComponent<SpriteComponent>().hidden();
+
+	InitStars1();
 }
 

@@ -526,6 +526,10 @@ void NextRound(float deltaTime) {
 		else {
 		EnemyWonBanner.getComponent<SpriteComponent>().shown();
 		}*/
+		for (auto& e : Stars1) {
+			e->getComponent<SpriteComponent>().shown();
+			e->getComponent<AnimationComponent>().LoopAnimation(20, deltaTime);
+		}
 		Star1.getComponent<SpriteComponent>().shown();
 		Star1.getComponent<AnimationComponent>().LoopAnimation(20, deltaTime);
 		YouWonBanner.getComponent<SpriteComponent>().shown();
@@ -533,6 +537,9 @@ void NextRound(float deltaTime) {
 		//main functionality
 		flags.HandleButtons = false;
 		return;
+	}
+	for (auto& e : Stars1) {
+		e->getComponent<SpriteComponent>().hidden();
 	}
 	Star1.getComponent<SpriteComponent>().hidden();
 	YouWonBanner.getComponent<SpriteComponent>().hidden();
