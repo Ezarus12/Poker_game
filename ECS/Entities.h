@@ -8,6 +8,11 @@ SDL_Color white = { 255,255,255,255 };
 //Adding all of the entities
 Manager manager;
 
+
+/***********************
+      L A Y E R  1
+***********************/
+
 //Enemy
 auto& cowboy(manager.addEntity());
 
@@ -26,8 +31,9 @@ auto& hand_card2(manager.addEntity());
 auto& enemy_card1(manager.addEntity());
 auto& enemy_card2(manager.addEntity());
 
-
 auto& back_card(manager.addEntity());
+
+auto& CardBorder(manager.addEntity());
 
 //betting button
 auto& BB_center(manager.addEntity());
@@ -36,25 +42,31 @@ auto& BB_sub_small(manager.addEntity());
 auto& BB_add_big(manager.addEntity());
 auto& BB_add_small(manager.addEntity());
 
+auto& Fold_button(manager.addEntity());
+
+//Text displayed on screen
 auto& money_text(manager.addEntity());
 auto& enemy_money_text(manager.addEntity());
 auto& bet_text(manager.addEntity());
 auto& pool_text(manager.addEntity());
 
+
+//Blinds sprites
 auto& BigBlind(manager.addEntity());
 auto& BigBlindNote(manager.addEntity());
 
 auto& SmallBlind(manager.addEntity());
 auto& SmallBlindNote(manager.addEntity());
 
-auto& CardBorder(manager.addEntity());
 
+/***********************
+	  L A Y E R  2
+***********************/
 
 
 //Start button
 auto& Start_button(manager.addEntity());
 
-auto& Fold_button(manager.addEntity());
 
 auto& PokerRanking(manager.addEntity());
 
@@ -64,6 +76,12 @@ auto& YouWonBanner(manager.addEntity());
 //VFX
 auto& Star1(manager.addEntity());
 
+
+
+/***********************
+	  L A Y E R  3
+***********************/
+//Cursor
 auto& Mouse(manager.addEntity());
 
 
@@ -215,7 +233,7 @@ void InitEntities() {
 	PokerRanking.getComponent<SpriteComponent>().hidden();
 
 	//Round end banners
-	YouWonBanner.addComponent<PositionComponent>(0, 117);
+	YouWonBanner.addComponent<PositionComponent>(0, 118);
 	YouWonBanner.addComponent<SpriteComponent>("assets/YouWonBanner.png", 320, 62);
 	YouWonBanner.getComponent<SpriteComponent>().hidden();
 
@@ -225,3 +243,4 @@ void InitEntities() {
 	Star1.addComponent<AnimationComponent>(121, 11);
 	Star1.getComponent<SpriteComponent>().hidden();
 }
+
