@@ -128,17 +128,27 @@ void Game::handleEvents()
 				if (event.wheel.y > 0) // scroll up
 				{
 					int y = PokerRanking.getComponent<PositionComponent>().y();
+					float y2 = ScrollBar.getComponent<PositionComponent>().y();
 					if (y < 0) {
 						y += 10;
 						PokerRanking.getComponent<PositionComponent>().y(y);
+					}
+					if (y2 > 0) {
+						y2 -= 3.6;
+						ScrollBar.getComponent<PositionComponent>().y(y2);
 					}
 				}
 				else if (event.wheel.y < 0) // scroll down
 				{
 					int y = PokerRanking.getComponent<PositionComponent>().y();
+					float y2 = ScrollBar.getComponent<PositionComponent>().y();
 					if (y >= -450) {
 						y -= 10;
 						PokerRanking.getComponent<PositionComponent>().y(y);
+					}
+					if (y2 < 162) {
+						y2 += 3.6;
+						ScrollBar.getComponent<PositionComponent>().y(y2);
 					}
 
 				}

@@ -69,6 +69,7 @@ auto& Start_button(manager.addEntity());
 
 
 auto& PokerRanking(manager.addEntity());
+auto& ScrollBar(manager.addEntity());
 
 //End round banners
 auto& YouWonBanner(manager.addEntity());
@@ -80,7 +81,7 @@ vector<Entity*> Stars1;
 
 //Creating 10 stars in one vector
 void InitStars1() {
-	for (int i = 0; i < 15; i++) {
+	for (int i = 0; i < 10; i++) {
 		auto& e = manager.addEntity();
 		e.addComponent<PositionComponent>();
 		e.getComponent<PositionComponent>().x(Random(0, 310));
@@ -246,6 +247,10 @@ void InitEntities() {
 	PokerRanking.addComponent<PositionComponent>(70, 0);
 	PokerRanking.addComponent<SpriteComponent>("assets/Poker_hand_ranking.png", 180, 646);
 	PokerRanking.getComponent<SpriteComponent>().hidden();
+
+	ScrollBar.addComponent<PositionComponent>(244, 0);
+	ScrollBar.addComponent<SpriteComponent>("assets/Scroll.png", 6, 18);
+	ScrollBar.getComponent<SpriteComponent>().hidden();
 
 	//Round end banners
 	YouWonBanner.addComponent<PositionComponent>(0, 118);

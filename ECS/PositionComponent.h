@@ -30,6 +30,9 @@ public:
 	void x(int x) { xpos = x; }
 	void y(int y) { ypos = y; }
 
+	void x(float x) { xpos = x; }
+	void y(float y) { ypos = y; }
+
 	void setPos(int x, int y) {
 		xpos = x;
 		ypos = y;

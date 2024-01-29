@@ -15,9 +15,11 @@ inline void PokerRankingTable() {
 			flags.RankingShown = !flags.RankingShown;
 			if (flags.RankingShown) {
 				PokerRanking.getComponent<SpriteComponent>().shown();
+				ScrollBar.getComponent<SpriteComponent>().shown();
 			}
 			else {
 				PokerRanking.getComponent<SpriteComponent>().hidden();
+				ScrollBar.getComponent<SpriteComponent>().hidden();
 			}
 		}
 
