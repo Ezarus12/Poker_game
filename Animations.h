@@ -221,7 +221,6 @@ float money_transfer_anim;
 
 inline void MoneyTransfer(int& i, float deltaTime) {
 	if (flags.PlayCoinLoop) {
-		cout << "jestem";
 		Sound_effects.playSoundEffectTime("CoinDrop", ((0.02f) * pool * 1000) - 40);
 		flags.PlayCoinLoop = false;
 	}

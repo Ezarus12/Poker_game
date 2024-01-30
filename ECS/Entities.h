@@ -1,5 +1,6 @@
 #pragma once 
 
+extern Player player;
 
 SDL_Color red = { 148,0,0,255 };
 SDL_Color white = { 255,255,255,255 };
@@ -194,7 +195,7 @@ void InitEntities() {
 
 	money_text.addComponent<PositionComponent>(16, 7);
 	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
-	money_text.getComponent<TextComponent>().setNum(&money[0]);
+	money_text.getComponent<TextComponent>().setNum(&player.money);
 
 	money_text.addComponent<PositionComponent>(132, 24);
 	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);

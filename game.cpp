@@ -81,6 +81,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	Deck.reserve(sizeof(Card)* 52);
 	fill_deck(Deck);
 	//Draw hands and create score for each of the players
+	
+
 	for (int i = 0; i < players_num; i++) {
 		players.push_back(draw(Deck));
 		Score* s = new Score();
@@ -97,10 +99,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	}
 
 	//Init player
-	/*player.hand = draw(Deck);
-	player.money = 100;
+	player.InitPlayer(100, &players[0]);
 
-	enemy.hand = draw(Deck);
+	/*enemy.hand = draw(Deck);
 	enemy.money = 100;*/
 
 
@@ -206,7 +207,7 @@ void HandleBetButtons() {
 			BB_center.getComponent<MouseController>().down = false;
 			BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center.png");
 			pool += bet;
-			money[0] -= bet;
+			player.money -= bet;
 			currentBet[0] += bet;
 			bet = 0;
 			lowestBet = 0;
@@ -243,7 +244,7 @@ void HandleBetButtons() {
 			flags.buttonClickSFX = true;
 			BB_add_big.getComponent<MouseController>().down = false;
 			BB_add_big.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_big.png");
-			if (bet <= 989 && bet  <= money[0] - 10) {
+			if (bet <= 989 && bet  <= player.money - 10) {
 				bet += 10;
 			}
 		}
@@ -260,7 +261,7 @@ void HandleBetButtons() {
 			flags.buttonClickSFX = true;
 			BB_add_small.getComponent<MouseController>().down = false;
 			BB_add_small.getComponent<SpriteComponent>().setTex("assets/Bet_button_add_small.png");
-			if (bet <= 998 && bet <= money[0] - 1) {
+			if (bet <= 998 && bet <= player.money - 1) {
 				bet += 1;
 			}
 		}
@@ -314,26 +315,26 @@ void HandleBetButtons() {
 }
 
 void TakeBlindMoney(int p) {
-	if (money[p] < currentBB) 
-	{
-		currentBet[p] = money[p];
-		money[p] = 0;
-	}
-	else {
-		money[p] -= currentBB;
-		currentBet[p] = currentBB;
-	}
 	if (p == 1) //enemy got the big blind
 	{
-		if (money[p - 1] < currentBB / 2)
+		if (money[p] < currentBB)
 		{
-			currentBet[p - 1] = money[p - 1];
-			money[p - 1] = 0;
+			currentBet[p] = money[p];
+			money[p] = 0;
+		}
+		else {
+			money[p] -= currentBB;
+			currentBet[p] = currentBB;
+		}
+		if (player.money < currentBB / 2)
+		{
+			currentBet[p - 1] = player.money;
+			player.money = 0;
 			lowestBet = 0;
 		}
 		else
 		{
-			money[p - 1] -= currentBB / 2;
+			player.money -= currentBB / 2;
 			currentBet[p - 1] = currentBB / 2;
 			bet = lowestBet = currentBB / 2;
 
@@ -341,6 +342,15 @@ void TakeBlindMoney(int p) {
 	}
 	else //player got the big blind
 	{
+		if (player.money < currentBB)
+		{
+			currentBet[p] = player.money;
+			player.money = 0;
+		}
+		else {
+			player.money -= currentBB;
+			currentBet[p] = currentBB;
+		}
 		if (money[p + 1] < currentBB / 2)
 		{
 			currentBet[p + 1] = money[p + 1];
@@ -385,7 +395,7 @@ void Round(float deltaTime) {
 	}
 	if (flags.EnemyFolded) {
 		if (pool > 0) {
-			MoneyTransfer(money[0], deltaTime);
+			MoneyTransfer(player.money, deltaTime);
 			return;
 		}
 		else {
@@ -491,7 +501,7 @@ void Round(float deltaTime) {
 		}
 		if (scores[0].score < scores[1].score || scores[0].tieWin) {
 			if (pool > 0) {
-				MoneyTransfer(money[0], deltaTime);
+				MoneyTransfer(player.money, deltaTime);
 				return;
 			}
 			else {
@@ -518,8 +528,7 @@ void Round(float deltaTime) {
 float licznik;
 
 void NextRound(float deltaTime) {
-	RoundCounter++;
-	if (money[0] <= 0) {
+	if (player.money <= 0) {
 		cout << "Player Lost";
 		flags.GameEnded = true;
 	}
@@ -585,10 +594,11 @@ void NextRound(float deltaTime) {
 	}
 
 	//doubling big blind every two rounds
+	RoundCounter++;
 	if (!(RoundCounter % 2)) { 
 		currentBB *= 2;
 	}
-
+	cout << currentBB;
 	flags.NextRoundFlags();
 	flags.NextRound = false;
 }
