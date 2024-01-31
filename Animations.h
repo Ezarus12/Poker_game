@@ -36,14 +36,14 @@ inline bool BlindsToss(int Blind, float deltaTime) {
 		yB -= deltaTime * animRate;
 		if (xB >= 122)
 		{
-			BigBlind.getComponent<PositionComponent>().x(xB);
+			BigBlindToken.getComponent<PositionComponent>().x(xB);
 		}
 		else {
 			con[0] = true;
 		}
 		if (yB >= 1)
 		{
-			BigBlind.getComponent<PositionComponent>().y(yB);
+			BigBlindToken.getComponent<PositionComponent>().y(yB);
 		}
 		else {
 			con[1] = true;
@@ -53,24 +53,24 @@ inline bool BlindsToss(int Blind, float deltaTime) {
 		yS += deltaTime * animRate / 2;
 		if (xS <= 242)
 		{
-			SmallBlind.getComponent<PositionComponent>().x(xS);
+			SmallBlindToken.getComponent<PositionComponent>().x(xS);
 		}
 		else {
 			con[2] = true;
 		}
 		if (yS <= 134)
 		{
-			SmallBlind.getComponent<PositionComponent>().y(yS);
+			SmallBlindToken.getComponent<PositionComponent>().y(yS);
 		}
 		else {
 			con[3] = true;
 		}
 
 		if (con[0] && con[1] && con[2] && con[3]) { //Setting final position of the blinds in case the float numbers exceed the desired position
-			BigBlind.getComponent<PositionComponent>().x(122);
-			BigBlind.getComponent<PositionComponent>().y(1);
-			SmallBlind.getComponent<PositionComponent>().x(242);
-			SmallBlind.getComponent<PositionComponent>().y(134);
+			BigBlindToken.getComponent<PositionComponent>().x(122);
+			BigBlindToken.getComponent<PositionComponent>().y(1);
+			SmallBlindToken.getComponent<PositionComponent>().x(242);
+			SmallBlindToken.getComponent<PositionComponent>().y(134);
 			return true;
 		}
 	}
@@ -80,7 +80,7 @@ inline bool BlindsToss(int Blind, float deltaTime) {
 		yB += deltaTime * animRate / 2;
 		if (xB <= 242)
 		{
-			BigBlind.getComponent<PositionComponent>().x(xB);
+			BigBlindToken.getComponent<PositionComponent>().x(xB);
 		}
 		else {
 			con[0] = true;
@@ -88,7 +88,7 @@ inline bool BlindsToss(int Blind, float deltaTime) {
 
 		if (yB <= 134)
 		{
-			BigBlind.getComponent<PositionComponent>().y(yB);
+			BigBlindToken.getComponent<PositionComponent>().y(yB);
 		}
 		else {
 			con[1] = true;
@@ -98,24 +98,24 @@ inline bool BlindsToss(int Blind, float deltaTime) {
 		yS -= deltaTime * animRate;
 		if (xS >= 122)
 		{
-			SmallBlind.getComponent<PositionComponent>().x(xS);
+			SmallBlindToken.getComponent<PositionComponent>().x(xS);
 		}
 		else {
 			con[2] = true;
 		}
 		if (yS >= 1)
 		{
-			SmallBlind.getComponent<PositionComponent>().y(yS);
+			SmallBlindToken.getComponent<PositionComponent>().y(yS);
 		}
 		else {
 			con[3] = true;
 		}
 
 		if (con[0] && con[1] && con[2] && con[3]) { //Setting final position of the blinds in case the float numbers exceed the desired position
-			BigBlind.getComponent<PositionComponent>().x(242);
-			BigBlind.getComponent<PositionComponent>().y(135);
-			SmallBlind.getComponent<PositionComponent>().x(122);
-			SmallBlind.getComponent<PositionComponent>().y(1);
+			BigBlindToken.getComponent<PositionComponent>().x(242);
+			BigBlindToken.getComponent<PositionComponent>().y(135);
+			SmallBlindToken.getComponent<PositionComponent>().x(122);
+			SmallBlindToken.getComponent<PositionComponent>().y(1);
 			return true;
 		}
 	}
@@ -135,12 +135,12 @@ inline void TurningBlinds(float deltaTime)
 {
 	if (!Turn_stop) {
 		if (Turn_row) {
-			BigBlind.getComponent<SpriteComponent>().changeSprite(int(Turn_spirte), 0);
-			SmallBlind.getComponent<SpriteComponent>().changeSprite(int(Turn_spirte), 0);
+			BigBlindToken.getComponent<SpriteComponent>().changeSprite(int(Turn_spirte), 0);
+			SmallBlindToken.getComponent<SpriteComponent>().changeSprite(int(Turn_spirte), 0);
 		}
 		else {
-			BigBlind.getComponent<SpriteComponent>().changeSprite(int(Turn_spirte), 1);
-			SmallBlind.getComponent<SpriteComponent>().changeSprite(int(Turn_spirte), 1);
+			BigBlindToken.getComponent<SpriteComponent>().changeSprite(int(Turn_spirte), 1);
+			SmallBlindToken.getComponent<SpriteComponent>().changeSprite(int(Turn_spirte), 1);
 		}
 
 		Turn_spirte += deltaTime * 17;
@@ -158,13 +158,13 @@ inline void TurningBlinds(float deltaTime)
 }
 
 inline void ResetBlinds() {
-	BigBlind.getComponent<SpriteComponent>().changeSprite(0, 0);
-	BigBlind.getComponent<PositionComponent>().x(160);
-	BigBlind.getComponent<PositionComponent>().y(90);
+	BigBlindToken.getComponent<SpriteComponent>().changeSprite(0, 0);
+	BigBlindToken.getComponent<PositionComponent>().x(160);
+	BigBlindToken.getComponent<PositionComponent>().y(90);
 
-	SmallBlind.getComponent<SpriteComponent>().changeSprite(0, 0);
-	SmallBlind.getComponent<PositionComponent>().x(160);
-	SmallBlind.getComponent<PositionComponent>().y(90);
+	SmallBlindToken.getComponent<SpriteComponent>().changeSprite(0, 0);
+	SmallBlindToken.getComponent<PositionComponent>().x(160);
+	SmallBlindToken.getComponent<PositionComponent>().y(90);
 
 	xB = 160;
 	yB = 90;

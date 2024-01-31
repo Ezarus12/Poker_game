@@ -166,8 +166,8 @@ void Game::update(float deltaTime)
 	manager.update();
 	UpdateCursor();
 	if (flags.GameEnded) {
-		BigBlind.getComponent<SpriteComponent>().hidden();
-		SmallBlind.getComponent<SpriteComponent>().hidden();
+		BigBlindToken.getComponent<SpriteComponent>().hidden();
+		SmallBlindToken.getComponent<SpriteComponent>().hidden();
 		return;
 	}
 

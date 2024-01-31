@@ -53,10 +53,10 @@ auto& pool_text(manager.addEntity());
 
 
 //Blinds sprites
-auto& BigBlind(manager.addEntity());
+auto& BigBlindToken(manager.addEntity());
 auto& BigBlindNote(manager.addEntity());
 
-auto& SmallBlind(manager.addEntity());
+auto& SmallBlindToken(manager.addEntity());
 auto& SmallBlindNote(manager.addEntity());
 
 
@@ -212,27 +212,27 @@ void InitEntities() {
 	//Blinds
 	if (bigblind)
 	{
-		BigBlind.addComponent<PositionComponent>(160, 90);
+		BigBlindToken.addComponent<PositionComponent>(160, 90);
 		BigBlindNote.addComponent<PositionComponent>(139, 3);
 		SmallBlindNote.addComponent<PositionComponent>(190, 136);
-		SmallBlind.addComponent<PositionComponent>(160, 90);
+		SmallBlindToken.addComponent<PositionComponent>(160, 90);
 	}
 	else
 	{
-		BigBlind.addComponent<PositionComponent>(160, 90);
+		BigBlindToken.addComponent<PositionComponent>(160, 90);
 		BigBlindNote.addComponent<PositionComponent>(200, 136);
 		SmallBlindNote.addComponent<PositionComponent>(139, 3);
-		SmallBlind.addComponent<PositionComponent>(160, 90);
+		SmallBlindToken.addComponent<PositionComponent>(160, 90);
 	}
 
-	BigBlind.addComponent<SpriteComponent>("assets/BigBlindSpriteSheet.png", 16, 16);
-	BigBlind.addComponent<MouseController>();
-	BigBlind.getComponent<MouseController>().setHover();
+	BigBlindToken.addComponent<SpriteComponent>("assets/BigBlindSpriteSheet.png", 16, 16);
+	BigBlindToken.addComponent<MouseController>();
+	BigBlindToken.getComponent<MouseController>().setHover();
 
 
-	SmallBlind.addComponent<SpriteComponent>("assets/SmallBlindSpriteSheet.png", 16, 16);
-	SmallBlind.addComponent<MouseController>();
-	SmallBlind.getComponent<MouseController>().setHover();
+	SmallBlindToken.addComponent<SpriteComponent>("assets/SmallBlindSpriteSheet.png", 16, 16);
+	SmallBlindToken.addComponent<MouseController>();
+	SmallBlindToken.getComponent<MouseController>().setHover();
 
 	BigBlindNote.addComponent<SpriteComponent>("assets/BigBlindNote.png", 42, 12);
 	BigBlindNote.getComponent<SpriteComponent>().hidden();

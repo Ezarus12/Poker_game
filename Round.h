@@ -33,7 +33,7 @@ void HandleBetButtons() {
 			currentBet[0] += bet;
 			bet = 0;
 			lowestBet = 0;
-			if (flags.firstBet) {
+			if (flags.firstBet && currentBet[0] == currentBet[1]) {
 				flags.firstBet = false;
 				flags.Show3Cards = true;
 				flags.secondBet = true;
@@ -183,7 +183,7 @@ void TakeBlindMoney(int p) {
 			money[p + 1] -= currentBB / 2;
 			currentBet[p + 1] = currentBB / 2;
 		}
-
+		flags.EnemyMove = true;
 	}
 	for (int i = 0; i < players_num; i++) {
 		pool += currentBet[i];
@@ -217,7 +217,15 @@ void NextCards(vector<Card>& Deck) {
 
 }
 
+void EqualBets() {
+	if (currentBet[0] != currentBet[1]) {
+		return;
+	}
+
+}
+
 void Round(float deltaTime) {
+	//cout << currentBet[0] << endl;
 	cowboy.getComponent<AnimationComponent>().LoopAnimation(1, deltaTime);
 	HandCardsHover(deltaTime);
 
@@ -256,10 +264,11 @@ void Round(float deltaTime) {
 		Blinds(bigblind);
 		flags.TakeBlinds = false;
 	}
+
 	// showing token notes
 	if (flags.BlindsCon) {
 		//Showing token notes
-		if (BigBlind.getComponent<MouseController>().hovered) {
+		if (BigBlindToken.getComponent<MouseController>().hovered) {
 			BigBlindNote.getComponent<SpriteComponent>().shown();
 
 		}
@@ -267,7 +276,7 @@ void Round(float deltaTime) {
 			BigBlindNote.getComponent<SpriteComponent>().hidden();
 		}
 
-		if (SmallBlind.getComponent<MouseController>().hovered) {
+		if (SmallBlindToken.getComponent<MouseController>().hovered) {
 			SmallBlindNote.getComponent<SpriteComponent>().shown();
 
 		}
@@ -279,7 +288,7 @@ void Round(float deltaTime) {
 
 	//Enemy move
 	if (flags.EnemyMove) {
-		enemy.set_score(win_Simplified(table));
+		enemy.set_score_table(win_Simplified(table));
 		vector<Card> cards = combine(table, players, 1);
 		enemy.set_score(win_Simplified(cards));
 		int Bet_enemy = enemy.Decide(currentBet[0]);
@@ -288,12 +297,6 @@ void Round(float deltaTime) {
 		pool += Bet_enemy;
 		flags.EnemyMove = false;
 	}
-
-	/*while (currentBet[0] != currentBet[1]) {
-		money[1]--;
-		currentBet[1]++;
-		pool++;
-	}*/
 
 	//Displaying first 3 cards
 	if (flags.Show3Cards) {
