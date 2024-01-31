@@ -20,7 +20,6 @@ void DrawTable(vector<Card>& Deck) {
 
 
 void HandleBetButtons() {
-
 	//Bet button
 	if (BB_center.getComponent<MouseController>().down) {
 		BB_center.getComponent<SpriteComponent>().setTex("assets/Bet_button_center_c.png");
@@ -33,6 +32,10 @@ void HandleBetButtons() {
 			currentBet[0] += bet;
 			bet = 0;
 			lowestBet = 0;
+			cout << "Current bets: " << currentBet[0] << " " << currentBet[1] << endl;
+			if (currentBet[0] >= currentBet[1]) {
+				flags.EnemyMove = true;
+			}
 			if (flags.firstBet && currentBet[0] == currentBet[1]) {
 				flags.firstBet = false;
 				flags.Show3Cards = true;
@@ -288,20 +291,35 @@ void Round(float deltaTime) {
 
 	//Enemy move
 	if (flags.EnemyMove) {
+		cout << "Current bets in enemy move: " << currentBet[0] << " " << currentBet[1] << endl;
 		enemy.set_score_table(win_Simplified(table));
 		vector<Card> cards = combine(table, players, 1);
 		enemy.set_score(win_Simplified(cards));
 		int Bet_enemy = enemy.Decide(currentBet[0]);
+		if (Bet_enemy > currentBet[0]) {
+			cout << "Zmiana lowest bet";
+			lowestBet = Bet_enemy - currentBet[0];
+			if (lowestBet >= player.money) {
+				lowestBet = player.money;
+			}
+		}
+		else {
+			lowestBet = 0;
+		}
+		bet = lowestBet;
+		cout << lowestBet << endl;
 		money[1] -= Bet_enemy;
 		currentBet[1] += Bet_enemy;
 		pool += Bet_enemy;
 		flags.EnemyMove = false;
+		currentBet[0] = 0;
+		currentBet[1] = 0;
 	}
 
 	//Displaying first 3 cards
 	if (flags.Show3Cards) {
-		currentBet[0] = 0;
-		currentBet[1] = 0;
+		/*currentBet[0] = 0;
+		currentBet[1] = 0;*/
 		card1.getComponent<SpriteComponent>().shown();
 		card2.getComponent<SpriteComponent>().shown();
 		card3.getComponent<SpriteComponent>().shown();
@@ -311,8 +329,8 @@ void Round(float deltaTime) {
 
 	//Display 4th card
 	if (flags.Show4Card) {
-		currentBet[0] = 0;
-		currentBet[1] = 0;
+		/*currentBet[0] = 0;
+		currentBet[1] = 0;*/
 
 		card4.getComponent<SpriteComponent>().shown();
 		flags.Show4Card = false;
@@ -321,8 +339,8 @@ void Round(float deltaTime) {
 
 	//Display 5th card
 	if (flags.Show5Card) {
-		currentBet[0] = 0;
-		currentBet[1] = 0;
+		/*currentBet[0] = 0;
+		currentBet[1] = 0;*/
 
 		card5.getComponent<SpriteComponent>().shown();
 		flags.Show5Card = false;
@@ -330,8 +348,8 @@ void Round(float deltaTime) {
 	}
 
 	if (flags.endRound) {
-		currentBet[0] = 0;
-		currentBet[1] = 0;
+		/*currentBet[0] = 0;
+		currentBet[1] = 0;*/
 		enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
 		enemy_card2.getComponent<SpriteComponent>().changeSprite(players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
 		if (!flags.ResultCalc) { //Calculate the results of the round
