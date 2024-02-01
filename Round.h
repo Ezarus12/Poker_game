@@ -136,7 +136,6 @@ void HandleBetButtons() {
 		if (Game::event.type == SDL_MOUSEBUTTONUP) {
 			Sound_effects.playSoundEffect("ClickButton", 0);
 			Fold_button.getComponent<SpriteComponent>().setTex("assets/Fold_button.png");
-			cout << "Player folded";
 			Fold_button.getComponent<MouseController>().down = false;
 			flags.PlayerFolded = true;
 		}
@@ -233,7 +232,6 @@ void EqualBets() {
 }
 
 void Round(float deltaTime) {
-	//cout << currentBet[0] << endl;
 	cowboy.getComponent<AnimationComponent>().LoopAnimation(1, deltaTime);
 	HandCardsHover(deltaTime);
 
@@ -296,17 +294,16 @@ void Round(float deltaTime) {
 
 	//Enemy move
 	if (flags.EnemyMove) {
-		if (Wait(deltaTime, 2)) {}
+		if (Wait(deltaTime, 1)) {}
 		else {
 			return;
 		}
-		cout << "Current bets in enemy move: " << currentBet[0] << " " << currentBet[1] << endl;
+		cout << "ENEMY MOVE !!!!!!!!!!!!\n";
 		enemy.set_score_table(win_Simplified(table));
 		vector<Card> cards = combine(table, players, 1);
 		enemy.set_score(win_Simplified(cards));
 		int Bet_enemy = enemy.Decide(currentBet[0]);
 		if (Bet_enemy > currentBet[0]) {
-			cout << "Zmiana lowest bet";
 			lowestBet = Bet_enemy - currentBet[0];
 			if (lowestBet >= player.money) {
 				lowestBet = player.money;
@@ -316,7 +313,6 @@ void Round(float deltaTime) {
 			lowestBet = 0;
 		}
 		bet = lowestBet;
-		cout << lowestBet << endl;
 		money[1] -= Bet_enemy;
 		currentBet[1] += Bet_enemy;
 		pool += Bet_enemy;
@@ -333,7 +329,7 @@ void Round(float deltaTime) {
 		card2.getComponent<SpriteComponent>().shown();
 		card3.getComponent<SpriteComponent>().shown();
 		flags.Show3Cards = false;
-		flags.EnemyMove = true;
+		//flags.EnemyMove = true;
 	}
 
 	//Display 4th card
@@ -343,7 +339,7 @@ void Round(float deltaTime) {
 
 		card4.getComponent<SpriteComponent>().shown();
 		flags.Show4Card = false;
-		flags.EnemyMove = true;
+		//flags.EnemyMove = true;
 	}
 
 	//Display 5th card
@@ -353,7 +349,7 @@ void Round(float deltaTime) {
 
 		card5.getComponent<SpriteComponent>().shown();
 		flags.Show5Card = false;
-		flags.EnemyMove = true;
+		//flags.EnemyMove = true;
 	}
 
 	if (flags.endRound) {

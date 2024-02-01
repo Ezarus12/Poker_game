@@ -35,7 +35,9 @@ public:
 		return 0;
 	}
 	int Decide(int bet) {
-		
+		if (bet > currentBet[1]) { // call if raised
+			return bet - currentBet[1];
+		}
 		if (bet > *money) {
 			return 0;
 		}
