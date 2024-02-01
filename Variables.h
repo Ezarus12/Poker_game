@@ -35,3 +35,5 @@ int bet = 0; //value to bet
 int currentBB = 10; //current Big Blind value
 
 int lowestBet; //lowest possible bet
+
+int CardsOnTable = 0; //Number of cards shown on the table

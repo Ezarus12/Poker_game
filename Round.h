@@ -298,9 +298,11 @@ void Round(float deltaTime) {
 		else {
 			return;
 		}
-		cout << "ENEMY MOVE !!!!!!!!!!!!\n";
-		enemy.set_score_table(win_Simplified(table));
-		vector<Card> cards = combine(table, players, 1);
+		static vector<Card> temp; //Vector containing current cards on the table
+		for (static int i = 0; i < CardsOnTable; i++) { //Filling temp with cards on the table
+			temp.push_back(table[i]);
+		}
+		vector<Card> cards = combine(temp, players, 1);
 		enemy.set_score(win_Simplified(cards));
 		int Bet_enemy = enemy.Decide(currentBet[0]);
 		if (Bet_enemy > currentBet[0]) {
@@ -323,6 +325,7 @@ void Round(float deltaTime) {
 
 	//Displaying first 3 cards
 	if (flags.Show3Cards) {
+		CardsOnTable = 3;
 		/*currentBet[0] = 0;
 		currentBet[1] = 0;*/
 		card1.getComponent<SpriteComponent>().shown();
@@ -334,6 +337,7 @@ void Round(float deltaTime) {
 
 	//Display 4th card
 	if (flags.Show4Card) {
+		CardsOnTable = 4;
 		/*currentBet[0] = 0;
 		currentBet[1] = 0;*/
 
@@ -344,6 +348,7 @@ void Round(float deltaTime) {
 
 	//Display 5th card
 	if (flags.Show5Card) {
+		CardsOnTable = 5;
 		/*currentBet[0] = 0;
 		currentBet[1] = 0;*/
 

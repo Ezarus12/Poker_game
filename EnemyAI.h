@@ -35,11 +35,16 @@ public:
 		return 0;
 	}
 	int Decide(int bet) {
-		if (bet > currentBet[1]) { // call if raised
-			return bet - currentBet[1];
-		}
 		if (bet > *money) {
-			return 0;
+			if (score <= 9 || maxHandRank >= 11) {
+				cout << "All in\n";
+				return *money;
+			}
+			else {
+				flags.EnemyFolded = true;
+				return 0;
+			}
+			
 		}
 
 		if (!bigblind && flags.firstBet && bet == 0 ) { // enemy got SmallBlind
@@ -76,11 +81,17 @@ public:
 				return *money * (Random(30, 50) * 0.01);
 			}
 		}
-		else if (bet >= 0) {
-			cout << "calluje beta";
+		else if (bet >= 0 && bet < 0.5 * (*money)) { // Call if player has betted less then 50& of the enemy's money
+			cout << "Call";
 			return bet;
 		}
+		else if (bet >= 0.5 * (*money)) { // Fold if player betted >= 50% of the enemy's money
+			cout << "Fold";
+			flags.EnemyFolded = true;
+			return 0;
+		}
 		else {
+			cout << "ELSE CALL";
 			return bet;
 		}
 
