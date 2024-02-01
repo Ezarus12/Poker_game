@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Sound/SoundEffects.h"
 #include "EnemyAI.h"
+#include "Wait.h"
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 SDL_Texture* background;
@@ -165,6 +166,7 @@ void Game::update(float deltaTime)
 {
 	manager.update();
 	UpdateCursor();
+
 	if (flags.GameEnded) {
 		BigBlindToken.getComponent<SpriteComponent>().hidden();
 		SmallBlindToken.getComponent<SpriteComponent>().hidden();

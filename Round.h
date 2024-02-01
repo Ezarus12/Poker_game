@@ -1,4 +1,5 @@
 #pragma once
+#include "Wait.h"
 
 void DrawHands(vector<Card>& Deck) {
 	for (int i = 0; i < players_num; i++) {
@@ -291,6 +292,10 @@ void Round(float deltaTime) {
 
 	//Enemy move
 	if (flags.EnemyMove) {
+		if (Wait(deltaTime, 2)) {}
+		else {
+			return;
+		}
 		cout << "Current bets in enemy move: " << currentBet[0] << " " << currentBet[1] << endl;
 		enemy.set_score_table(win_Simplified(table));
 		vector<Card> cards = combine(table, players, 1);
