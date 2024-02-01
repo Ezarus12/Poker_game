@@ -6,6 +6,7 @@ public:
 	int money;
 	Hand* hand;
 	Score* score;
+	bool allIn = false;
 	bool won;
 
 	Player() {

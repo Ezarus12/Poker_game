@@ -41,6 +41,7 @@ public:
 		}
 
 		if (!bigblind && flags.firstBet && bet == 0 ) { // enemy got SmallBlind
+			cout << "XD";
 			if (maxHandRank <= 3 && score == 10) { 
 				flags.EnemyFolded = true;
 				return 0;

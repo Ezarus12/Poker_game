@@ -37,7 +37,7 @@ void HandleBetButtons() {
 			if (currentBet[0] >= currentBet[1]) {
 				flags.EnemyMove = true;
 			}
-			if (flags.firstBet && currentBet[0] == currentBet[1]) {
+			if (flags.firstBet && currentBet[0] == currentBet[1] || player.allIn) {
 				flags.firstBet = false;
 				flags.Show3Cards = true;
 				flags.secondBet = true;
@@ -55,6 +55,9 @@ void HandleBetButtons() {
 			else if (flags.fourthBet) {
 				flags.fourthBet = false;
 				flags.endRound = true;
+			}
+			else {
+				cout << "XD";
 			}
 		}
 	}
@@ -157,6 +160,7 @@ void TakeBlindMoney(int p) {
 			currentBet[p - 1] = player.money;
 			player.money = 0;
 			lowestBet = 0;
+			player.allIn = true;
 		}
 		else
 		{
