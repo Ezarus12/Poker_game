@@ -294,10 +294,13 @@ void Round(float deltaTime) {
 
 	//Enemy move
 	if (flags.EnemyMove) {
+		static int enemy_move_counter = 0;
 		if (Wait(deltaTime, 1)) {}
 		else {
 			return;
 		}
+		enemy_move_counter++;
+		cout << "Enemy move: \n";
 		static vector<Card> temp; //Vector containing current cards on the table
 		for (static int i = 0; i < CardsOnTable; i++) { //Filling temp with cards on the table
 			temp.push_back(table[i]);
@@ -314,9 +317,22 @@ void Round(float deltaTime) {
 		else {
 			lowestBet = 0;
 		}
-		bet = lowestBet;
-		money[1] -= currentBet[1];
-		pool += currentBet[1];
+		if (bigblind) {
+			if (enemy_move_counter > 1) {
+
+			}
+			else {
+				bet = lowestBet;
+				money[1] -= currentBet[1] - currentBB;
+				pool += currentBet[1] - currentBB;
+			}
+		}
+		else {
+			bet = lowestBet;
+			money[1] -= currentBet[1];
+			pool += currentBet[1];
+		}
+		
 		flags.EnemyMove = false;
 	}
 

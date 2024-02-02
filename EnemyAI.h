@@ -41,6 +41,7 @@ public:
 				return *money;
 			}
 			else {
+				cout << "Fold";
 				flags.EnemyFolded = true;
 				return 0;
 			}
@@ -48,18 +49,18 @@ public:
 		}
 
 		if (!bigblind && flags.firstBet && bet == 0 ) { // enemy got SmallBlind
-			cout << "XD";
 			if (maxHandRank <= 3 && score == 10) { 
+				cout << "Fold";
 				flags.EnemyFolded = true;
 				return 0;
 			}
 			cout << "Polowa bigblinda" << endl;
 			return currentBB / 2;
 		}
-		if (bigblind && bet == 10) { // player called enemy's bigblind
-			return 0;
+		if (bigblind && currentBet[0] >= currentBet[1]) { //player raised the bigblind preflop
+			return currentBet[0] - currentBet[1];
 		}
-		else if (bet == 0) {
+		if (bet == 0) {
 			if (Random(0, 100) <= 70) { //70% chance to call
 				cout << "Called" << endl;
 				return Call();
