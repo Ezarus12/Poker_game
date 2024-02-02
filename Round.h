@@ -37,20 +37,6 @@ void HandleBetButtons() {
 			if (currentBet[0] >= currentBet[1]) {
 				flags.EnemyMove = true;
 			}
-			if (flags.secondBet) {
-				flags.secondBet = false;
-				flags.Show4Card = true;
-				flags.thirdBet = true;
-			}
-			else if (flags.thirdBet) {
-				flags.thirdBet = false;
-				flags.Show5Card = true;
-				flags.fourthBet = true;
-			}
-			else if (flags.fourthBet) {
-				flags.fourthBet = false;
-				flags.endRound = true;
-			}
 			else {
 				cout << "XD";
 			}
@@ -286,10 +272,24 @@ void Round(float deltaTime) {
 		}
 	}
 
-	if (flags.firstBet && currentBet[0] == currentBet[1] && flags.BigBlindCalled || player.allIn) {
+	if (flags.firstBet && currentBet[0] == currentBet[1] && flags.BigBlindCalled || player.allIn && flags.firstBet) {
 		flags.Show3Cards = true;
 		flags.secondBet = true;
 		flags.BigBlindCalled = false;
+	}
+	else if (flags.secondBet && flags.BigBlindCalled) {
+		flags.secondBet = false;
+		flags.Show4Card = true;
+		flags.thirdBet = true;
+	}
+	else if (flags.thirdBet && flags.BigBlindCalled) {
+		flags.thirdBet = false;
+		flags.Show5Card = true;
+		flags.fourthBet = true;
+	}
+	else if (flags.fourthBet && flags.BigBlindCalled) {
+		flags.fourthBet = false;
+		flags.endRound = true;
 	}
 
 
@@ -309,6 +309,9 @@ void Round(float deltaTime) {
 		vector<Card> cards = combine(temp, players, 1);
 		enemy.set_score(win_Simplified(cards));
 		currentBet[1] += enemy.Decide(currentBet[0]);
+		if (bigblind && currentBet[0] == currentBet[1]) {
+			flags.BigBlindCalled = true;
+		}
 		if (currentBet[1] > currentBet[0]) {
 			lowestBet = currentBet[1] - currentBet[0];
 			if (lowestBet >= player.money) {
