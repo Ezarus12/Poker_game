@@ -10,6 +10,7 @@ public:
     bool ResultCalc = false; //Is the the result of the round caluclated
     bool TakeBlinds = true;
     bool HandleButtons = false;
+    bool BigBlindCalled = false;
 
     //flags for displaying cards on the table
     bool Show3Cards = false;

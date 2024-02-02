@@ -37,12 +37,7 @@ void HandleBetButtons() {
 			if (currentBet[0] >= currentBet[1]) {
 				flags.EnemyMove = true;
 			}
-			if (flags.firstBet && currentBet[0] == currentBet[1] || player.allIn) {
-				flags.firstBet = false;
-				flags.Show3Cards = true;
-				flags.secondBet = true;
-			}
-			else if (flags.secondBet) {
+			if (flags.secondBet) {
 				flags.secondBet = false;
 				flags.Show4Card = true;
 				flags.thirdBet = true;
@@ -291,6 +286,12 @@ void Round(float deltaTime) {
 		}
 	}
 
+	if (flags.firstBet && currentBet[0] == currentBet[1] && flags.BigBlindCalled || player.allIn) {
+		flags.Show3Cards = true;
+		flags.secondBet = true;
+		flags.BigBlindCalled = false;
+	}
+
 
 	//Enemy move
 	if (flags.EnemyMove) {
@@ -317,15 +318,11 @@ void Round(float deltaTime) {
 		else {
 			lowestBet = 0;
 		}
-		if (bigblind) {
-			if (enemy_move_counter > 1) {
-
-			}
-			else {
+		if (bigblind && flags.firstBet) {
 				bet = lowestBet;
 				money[1] -= currentBet[1] - currentBB;
 				pool += currentBet[1] - currentBB;
-			}
+				flags.BigBlindCalled = true;
 		}
 		else {
 			bet = lowestBet;
@@ -345,6 +342,7 @@ void Round(float deltaTime) {
 			betted_enemy_text.getComponent<PositionComponent>().y(betted_enemy_text.getComponent<PositionComponent>().y() + (10 * deltaTime));
 			return;
 		}
+		flags.firstBet = false;
 		CardsOnTable = 3;
 		currentBet[0] = 0;
 		currentBet[1] = 0;

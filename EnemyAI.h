@@ -35,6 +35,7 @@ public:
 		return 0;
 	}
 	int Decide(int bet) {
+		cout << "DECIDE FUNCTION\n";
 		if (bet > *money) {
 			if (score <= 9 || maxHandRank >= 11) {
 				cout << "All in\n";
@@ -48,6 +49,12 @@ public:
 			
 		}
 
+		if (bigblind && flags.firstBet && bet == currentBet[1]) {
+			flags.BigBlindCalled = true;
+			cout << "no raise";
+			return 0;
+		}
+
 		if (!bigblind && flags.firstBet && bet == 0 ) { // enemy got SmallBlind
 			if (maxHandRank <= 3 && score == 10) { 
 				cout << "Fold";
@@ -57,7 +64,7 @@ public:
 			cout << "Polowa bigblinda" << endl;
 			return currentBB / 2;
 		}
-		if (bigblind && currentBet[0] >= currentBet[1]) { //player raised the bigblind preflop
+		if (bigblind && currentBet[0] >= currentBet[1] && flags.firstBet) { //player raised the bigblind preflop
 			return currentBet[0] - currentBet[1];
 		}
 		if (bet == 0) {
@@ -95,9 +102,5 @@ public:
 			cout << "ELSE CALL";
 			return bet;
 		}
-
 	}
-
-
-	
 };
