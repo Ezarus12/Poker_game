@@ -322,8 +322,11 @@ void Round(float deltaTime) {
 
 	//Displaying first 3 cards
 	if (flags.Show3Cards) {
-		if (Wait(deltaTime, 2)) {}
+		if (Wait(deltaTime, 2)) {
+			betted_enemy_text.getComponent<PositionComponent>().y(24);
+		}
 		else {
+			betted_enemy_text.getComponent<PositionComponent>().y(betted_enemy_text.getComponent<PositionComponent>().y() + (10 * deltaTime));
 			return;
 		}
 		CardsOnTable = 3;
@@ -338,8 +341,11 @@ void Round(float deltaTime) {
 
 	//Display 4th card
 	if (flags.Show4Card) {
-		if (Wait(deltaTime, 2)) {}
+		if (Wait(deltaTime, 2)) {
+			betted_enemy_text.getComponent<PositionComponent>().y(24);
+		}
 		else {
+			betted_enemy_text.getComponent<PositionComponent>().y(betted_enemy_text.getComponent<PositionComponent>().y() + (10 * deltaTime));
 			return;
 		}
 		CardsOnTable = 4;
@@ -353,8 +359,11 @@ void Round(float deltaTime) {
 
 	//Display 5th card
 	if (flags.Show5Card) {
-		if (Wait(deltaTime, 2)) {}
+		if (Wait(deltaTime, 2)) {
+			betted_enemy_text.getComponent<PositionComponent>().y(24);
+		}
 		else {
+			betted_enemy_text.getComponent<PositionComponent>().y(betted_enemy_text.getComponent<PositionComponent>().y() + (10 * deltaTime));
 			return;
 		}
 		CardsOnTable = 5;
@@ -367,10 +376,6 @@ void Round(float deltaTime) {
 	}
 
 	if (flags.endRound) {
-		if (Wait(deltaTime, 2)) {}
-		else {
-			return;
-		}
 		currentBet[0] = 0;
 		currentBet[1] = 0;
 		enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
