@@ -304,9 +304,9 @@ void Round(float deltaTime) {
 		}
 		vector<Card> cards = combine(temp, players, 1);
 		enemy.set_score(win_Simplified(cards));
-		int Bet_enemy = enemy.Decide(currentBet[0]);
-		if (Bet_enemy > currentBet[0]) {
-			lowestBet = Bet_enemy - currentBet[0];
+		currentBet[1] += enemy.Decide(currentBet[0]);
+		if (currentBet[1] > currentBet[0]) {
+			lowestBet = currentBet[1] - currentBet[0];
 			if (lowestBet >= player.money) {
 				lowestBet = player.money;
 			}
@@ -315,19 +315,20 @@ void Round(float deltaTime) {
 			lowestBet = 0;
 		}
 		bet = lowestBet;
-		money[1] -= Bet_enemy;
-		currentBet[1] += Bet_enemy;
-		pool += Bet_enemy;
+		money[1] -= currentBet[1];
+		pool += currentBet[1];
 		flags.EnemyMove = false;
-		currentBet[0] = 0;
-		currentBet[1] = 0;
 	}
 
 	//Displaying first 3 cards
 	if (flags.Show3Cards) {
+		if (Wait(deltaTime, 2)) {}
+		else {
+			return;
+		}
 		CardsOnTable = 3;
-		/*currentBet[0] = 0;
-		currentBet[1] = 0;*/
+		currentBet[0] = 0;
+		currentBet[1] = 0;
 		card1.getComponent<SpriteComponent>().shown();
 		card2.getComponent<SpriteComponent>().shown();
 		card3.getComponent<SpriteComponent>().shown();
@@ -337,9 +338,13 @@ void Round(float deltaTime) {
 
 	//Display 4th card
 	if (flags.Show4Card) {
+		if (Wait(deltaTime, 2)) {}
+		else {
+			return;
+		}
 		CardsOnTable = 4;
-		/*currentBet[0] = 0;
-		currentBet[1] = 0;*/
+		currentBet[0] = 0;
+		currentBet[1] = 0;
 
 		card4.getComponent<SpriteComponent>().shown();
 		flags.Show4Card = false;
@@ -348,9 +353,13 @@ void Round(float deltaTime) {
 
 	//Display 5th card
 	if (flags.Show5Card) {
+		if (Wait(deltaTime, 2)) {}
+		else {
+			return;
+		}
 		CardsOnTable = 5;
-		/*currentBet[0] = 0;
-		currentBet[1] = 0;*/
+		currentBet[0] = 0;
+		currentBet[1] = 0;
 
 		card5.getComponent<SpriteComponent>().shown();
 		flags.Show5Card = false;
@@ -358,8 +367,12 @@ void Round(float deltaTime) {
 	}
 
 	if (flags.endRound) {
-		/*currentBet[0] = 0;
-		currentBet[1] = 0;*/
+		if (Wait(deltaTime, 2)) {}
+		else {
+			return;
+		}
+		currentBet[0] = 0;
+		currentBet[1] = 0;
 		enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
 		enemy_card2.getComponent<SpriteComponent>().changeSprite(players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
 		if (!flags.ResultCalc) { //Calculate the results of the round

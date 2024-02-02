@@ -50,6 +50,7 @@ auto& money_text(manager.addEntity());
 auto& enemy_money_text(manager.addEntity());
 auto& bet_text(manager.addEntity());
 auto& pool_text(manager.addEntity());
+auto& betted_enemy_text(manager.addEntity());
 
 
 //Blinds sprites
@@ -208,6 +209,11 @@ void InitEntities() {
 	pool_text.addComponent<PositionComponent>(290, 7);
 	pool_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
 	pool_text.getComponent<TextComponent>().setNum(&pool);
+
+	betted_enemy_text.addComponent<PositionComponent>(162, 24);
+	betted_enemy_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), white);
+	betted_enemy_text.getComponent<TextComponent>().setNum(&currentBet[1]);
+	betted_enemy_text.getComponent<TextComponent>().setShowable();
 
 	//Blinds
 	if (bigblind)
