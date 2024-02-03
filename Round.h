@@ -34,7 +34,12 @@ void HandleBetButtons() {
 			bet = 0;
 			lowestBet = 0;
 			cout << "Current bets: " << currentBet[0] << " " << currentBet[1] << endl;
-			if (currentBet[0] >= currentBet[1]) {
+			if (!bigblind && currentBet[0] == currentBet[1]) {
+				flags.BigBlindCalled = true;
+				flags.EnemyMove = false;
+				cout << "call as bigblind\n";
+			}
+			else if (currentBet[0] >= currentBet[1]) {
 				flags.EnemyMove = true;
 			}
 			else {
@@ -215,7 +220,6 @@ void EqualBets() {
 void Round(float deltaTime) {
 	cowboy.getComponent<AnimationComponent>().LoopAnimation(1, deltaTime);
 	HandCardsHover(deltaTime);
-
 	//Folds
 	if (flags.PlayerFolded) {
 		if (pool > 0) {
@@ -291,16 +295,12 @@ void Round(float deltaTime) {
 		flags.fourthBet = false;
 		flags.endRound = true;
 	}
-
-
 	//Enemy move
 	if (flags.EnemyMove) {
-		static int enemy_move_counter = 0;
 		if (Wait(deltaTime, 1)) {}
 		else {
 			return;
 		}
-		enemy_move_counter++;
 		cout << "Enemy move: \n";
 		static vector<Card> temp; //Vector containing current cards on the table
 		for (static int i = 0; i < CardsOnTable; i++) { //Filling temp with cards on the table
@@ -308,7 +308,9 @@ void Round(float deltaTime) {
 		}
 		vector<Card> cards = combine(temp, players, 1);
 		enemy.set_score(win_Simplified(cards));
+		cout << "\nBefore decision: " << currentBet[1];
 		currentBet[1] += enemy.Decide(currentBet[0]);
+		cout << "\nAfter decision: " << currentBet[1];
 		if (bigblind && currentBet[0] == currentBet[1]) {
 			flags.BigBlindCalled = true;
 		}
@@ -327,6 +329,20 @@ void Round(float deltaTime) {
 				pool += currentBet[1] - currentBB;
 				flags.BigBlindCalled = true;
 		}
+		else if (!bigblind && flags.firstBet) {
+			cout << "small call";
+			bet = lowestBet;
+			if (currentBet[0] == currentBB) {
+				money[1] -= currentBet[1] - currentBB / 2;
+				pool += currentBet[1] - currentBB / 2;
+			}
+			else {
+				cout << "minus 1 to 0";
+				money[1] -= currentBet[1] - currentBB;
+				pool += currentBet[1] - currentBB;
+				flags.BigBlindCalled = true;
+			}
+		}
 		else {
 			bet = lowestBet;
 			money[1] -= currentBet[1];
@@ -344,6 +360,9 @@ void Round(float deltaTime) {
 		else {
 			betted_enemy_text.getComponent<PositionComponent>().y(betted_enemy_text.getComponent<PositionComponent>().y() + (10 * deltaTime));
 			return;
+		}
+		if (!bigblind) { //small blind starts the round
+			flags.EnemyMove = true;
 		}
 		flags.firstBet = false;
 		CardsOnTable = 3;
@@ -365,6 +384,9 @@ void Round(float deltaTime) {
 			betted_enemy_text.getComponent<PositionComponent>().y(betted_enemy_text.getComponent<PositionComponent>().y() + (10 * deltaTime));
 			return;
 		}
+		if (!bigblind) { //small blind starts the round
+			flags.EnemyMove = true;
+		}
 		CardsOnTable = 4;
 		currentBet[0] = 0;
 		currentBet[1] = 0;
@@ -382,6 +404,9 @@ void Round(float deltaTime) {
 		else {
 			betted_enemy_text.getComponent<PositionComponent>().y(betted_enemy_text.getComponent<PositionComponent>().y() + (10 * deltaTime));
 			return;
+		}
+		if (!bigblind) { //small blind starts the round
+			flags.EnemyMove = true;
 		}
 		CardsOnTable = 5;
 		currentBet[0] = 0;

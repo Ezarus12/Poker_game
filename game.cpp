@@ -110,7 +110,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	enemy.set_maxHandRank(scores[1].handRank);
 	enemy.set_money(&money[1]);
 
-	bigblind = 1;
+	bigblind = 0;
 	//bigblind = Random(0, 1);
 
 	InitSounds();
