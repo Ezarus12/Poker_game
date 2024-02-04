@@ -233,13 +233,13 @@ void Round(float deltaTime) {
 			flags.NextRound = true;
 		}
 	}
-	if (flags.EnemyFolded) {
+	if (enemy.get_fold()) {
 		if (pool > 0) {
 			MoneyTransfer(player.money, deltaTime);
 			return;
 		}
 		else {
-			flags.EnemyFolded = false;
+			enemy.set_fold(false);
 			flags.NextRound = true;
 		}
 	}
@@ -320,43 +320,45 @@ void Round(float deltaTime) {
 			vector<Card> cards = combine(temp, players, 1);
 			enemy.set_score(win_Simplified(cards));
 			currentBet[1] += enemy.Decide(currentBet[0]);
-			if (bigblind && currentBet[0] == currentBet[1]) {
-				flags.BigBlindCalled = true;
-			}
-			if (currentBet[1] > currentBet[0]) {
-				lowestBet = currentBet[1] - currentBet[0];
-				if (lowestBet >= player.money) {
-					lowestBet = player.money;
+			if (!enemy.get_fold()) {
+				if (bigblind && currentBet[0] == currentBet[1]) {
+					flags.BigBlindCalled = true;
 				}
-			}
-			else {
-				lowestBet = 0;
-			}
-			if (bigblind && flags.firstBet) {
-				bet = lowestBet;
-				money[1] -= currentBet[1] - currentBB;
-				pool += currentBet[1] - currentBB;
-				flags.BigBlindCalled = true;
-			}
-			else if (!bigblind && flags.firstBet) {
-				bet = lowestBet;
-				if (currentBet[0] == currentBB) {
-					money[1] -= currentBet[1] - currentBB / 2;
-					pool += currentBet[1] - currentBB / 2;
+				if (currentBet[1] > currentBet[0]) {
+					lowestBet = currentBet[1] - currentBet[0];
+					if (lowestBet >= player.money) {
+						lowestBet = player.money;
+					}
 				}
 				else {
+					lowestBet = 0;
+				}
+				if (bigblind && flags.firstBet) {
+					bet = lowestBet;
 					money[1] -= currentBet[1] - currentBB;
 					pool += currentBet[1] - currentBB;
 					flags.BigBlindCalled = true;
 				}
-			}
-			else {
-				bet = lowestBet;
-				money[1] -= currentBet[1];
-				pool += currentBet[1];
-			}
+				else if (!bigblind && flags.firstBet) {
+					bet = lowestBet;
+					if (currentBet[0] == currentBB) {
+						money[1] -= currentBet[1] - currentBB / 2;
+						pool += currentBet[1] - currentBB / 2;
+					}
+					else {
+						money[1] -= currentBet[1] - currentBB;
+						pool += currentBet[1] - currentBB;
+						flags.BigBlindCalled = true;
+					}
+				}
+				else {
+					bet = lowestBet;
+					money[1] -= currentBet[1];
+					pool += currentBet[1];
+				}
 
-			flags.EnemyMove = false;
+				flags.EnemyMove = false;
+			}
 		}
 	}
 

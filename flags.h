@@ -26,7 +26,6 @@ public:
 
     //Fold flags
     bool PlayerFolded = false;
-    bool EnemyFolded = false;
 
     //Animation flags
     bool RankingShown = false;
