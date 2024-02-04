@@ -11,6 +11,7 @@ private:
 	int score_table;
 	int maxHandRank;
 	int* money;
+	bool allIn = false;
 public:
 	Enemy() = default;
 
@@ -26,6 +27,10 @@ public:
 	void set_score_table(int s) {
 		score_table = s;
 	}
+
+	bool get_AllIn() {
+		return allIn;
+	}
 	
 	void Fold() {
 		flags.EnemyFolded = true;
@@ -35,10 +40,10 @@ public:
 		return 0;
 	}
 	int Decide(int bet) {
-		cout << "DECIDE FUNCTION\n";
 		if (bet > *money) {
 			if (score <= 9 || maxHandRank >= 11) {
 				cout << "All in\n";
+				allIn = true;
 				return *money;
 			}
 			else {
@@ -74,7 +79,7 @@ public:
 		}
 		if (bet == 0) {
 			if (Random(0, 100) <= 70) { //70% chance to call
-				cout << "Called" << endl;
+				cout << "Checked" << endl;
 				return Call();
 			}
 			else if (maxHandRank < 10 && score > 9) { //In the other 30% bet 5-10% of the money

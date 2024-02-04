@@ -33,8 +33,11 @@ void HandleBetButtons() {
 			currentBet[0] += bet;
 			bet = 0;
 			lowestBet = 0;
-			cout << "Current bets: " << currentBet[0] << " " << currentBet[1] << endl;
-			if (!bigblind && currentBet[0] == currentBet[1]) {
+			//cout << "Current bets: " << currentBet[0] << " " << currentBet[1] << endl;
+			if (enemy.get_AllIn()) {
+				flags.BigBlindCalled = true;
+			}
+			else if (!bigblind && currentBet[0] == currentBet[1]) {
 				flags.BigBlindCalled = true;
 				flags.EnemyMove = false;
 				cout << "call as bigblind\n";
@@ -43,7 +46,6 @@ void HandleBetButtons() {
 				flags.EnemyMove = true;
 			}
 			else {
-				cout << "XD";
 			}
 		}
 	}
@@ -285,16 +287,20 @@ void Round(float deltaTime) {
 		flags.secondBet = false;
 		flags.Show4Card = true;
 		flags.thirdBet = true;
+		flags.BigBlindCalled = false;
 	}
 	else if (flags.thirdBet && flags.BigBlindCalled) {
 		flags.thirdBet = false;
 		flags.Show5Card = true;
 		flags.fourthBet = true;
+		flags.BigBlindCalled = false;
 	}
 	else if (flags.fourthBet && flags.BigBlindCalled) {
 		flags.fourthBet = false;
 		flags.endRound = true;
+		flags.BigBlindCalled = false;
 	}
+
 	//Enemy move
 	if (flags.EnemyMove) {
 		if (Wait(deltaTime, 1)) {}
@@ -302,54 +308,56 @@ void Round(float deltaTime) {
 			return;
 		}
 		cout << "Enemy move: \n";
-		static vector<Card> temp; //Vector containing current cards on the table
-		for (static int i = 0; i < CardsOnTable; i++) { //Filling temp with cards on the table
-			temp.push_back(table[i]);
-		}
-		vector<Card> cards = combine(temp, players, 1);
-		enemy.set_score(win_Simplified(cards));
-		cout << "\nBefore decision: " << currentBet[1];
-		currentBet[1] += enemy.Decide(currentBet[0]);
-		cout << "\nAfter decision: " << currentBet[1];
-		if (bigblind && currentBet[0] == currentBet[1]) {
-			flags.BigBlindCalled = true;
-		}
-		if (currentBet[1] > currentBet[0]) {
-			lowestBet = currentBet[1] - currentBet[0];
-			if (lowestBet >= player.money) {
-				lowestBet = player.money;
-			}
+		if (enemy.get_AllIn()) {
+			cout << "Enemy all in";
+			flags.EnemyMove = false;
 		}
 		else {
-			lowestBet = 0;
-		}
-		if (bigblind && flags.firstBet) {
+			static vector<Card> temp; //Vector containing current cards on the table
+			for (static int i = 0; i < CardsOnTable; i++) { //Filling temp with cards on the table
+				temp.push_back(table[i]);
+			}
+			vector<Card> cards = combine(temp, players, 1);
+			enemy.set_score(win_Simplified(cards));
+			currentBet[1] += enemy.Decide(currentBet[0]);
+			if (bigblind && currentBet[0] == currentBet[1]) {
+				flags.BigBlindCalled = true;
+			}
+			if (currentBet[1] > currentBet[0]) {
+				lowestBet = currentBet[1] - currentBet[0];
+				if (lowestBet >= player.money) {
+					lowestBet = player.money;
+				}
+			}
+			else {
+				lowestBet = 0;
+			}
+			if (bigblind && flags.firstBet) {
 				bet = lowestBet;
 				money[1] -= currentBet[1] - currentBB;
 				pool += currentBet[1] - currentBB;
 				flags.BigBlindCalled = true;
-		}
-		else if (!bigblind && flags.firstBet) {
-			cout << "small call";
-			bet = lowestBet;
-			if (currentBet[0] == currentBB) {
-				money[1] -= currentBet[1] - currentBB / 2;
-				pool += currentBet[1] - currentBB / 2;
+			}
+			else if (!bigblind && flags.firstBet) {
+				bet = lowestBet;
+				if (currentBet[0] == currentBB) {
+					money[1] -= currentBet[1] - currentBB / 2;
+					pool += currentBet[1] - currentBB / 2;
+				}
+				else {
+					money[1] -= currentBet[1] - currentBB;
+					pool += currentBet[1] - currentBB;
+					flags.BigBlindCalled = true;
+				}
 			}
 			else {
-				cout << "minus 1 to 0";
-				money[1] -= currentBet[1] - currentBB;
-				pool += currentBet[1] - currentBB;
-				flags.BigBlindCalled = true;
+				bet = lowestBet;
+				money[1] -= currentBet[1];
+				pool += currentBet[1];
 			}
+
+			flags.EnemyMove = false;
 		}
-		else {
-			bet = lowestBet;
-			money[1] -= currentBet[1];
-			pool += currentBet[1];
-		}
-		
-		flags.EnemyMove = false;
 	}
 
 	//Displaying first 3 cards
