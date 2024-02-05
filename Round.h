@@ -321,9 +321,6 @@ void Round(float deltaTime) {
 			enemy.set_score(win_Simplified(cards));
 			currentBet[1] += enemy.Decide(currentBet[0]);
 			if (!enemy.get_fold()) {
-				if (bigblind && currentBet[0] == currentBet[1]) {
-					flags.BigBlindCalled = true;
-				}
 				if (currentBet[1] > currentBet[0]) {
 					lowestBet = currentBet[1] - currentBet[0];
 					if (lowestBet >= player.money) {
