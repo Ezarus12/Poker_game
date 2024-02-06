@@ -278,27 +278,32 @@ void Round(float deltaTime) {
 		}
 	}
 
+	//cout << "Before 4 card " << "SecondBet: " << flags.secondBet << " BigBlindCalled: " << flags.BigBlindCalled << endl;
 	if (flags.firstBet && currentBet[0] == currentBet[1] && flags.BigBlindCalled || player.allIn && flags.firstBet) {
 		flags.Show3Cards = true;
 		flags.secondBet = true;
 		flags.BigBlindCalled = false;
+		enemy.set_raised(false);
 	}
 	else if (flags.secondBet && flags.BigBlindCalled) {
 		flags.secondBet = false;
 		flags.Show4Card = true;
 		flags.thirdBet = true;
 		flags.BigBlindCalled = false;
+		enemy.set_raised(false);
 	}
 	else if (flags.thirdBet && flags.BigBlindCalled) {
 		flags.thirdBet = false;
 		flags.Show5Card = true;
 		flags.fourthBet = true;
 		flags.BigBlindCalled = false;
+		enemy.set_raised(false);
 	}
 	else if (flags.fourthBet && flags.BigBlindCalled) {
 		flags.fourthBet = false;
 		flags.endRound = true;
 		flags.BigBlindCalled = false;
+		enemy.set_raised(false);
 	}
 
 	//Enemy move
@@ -357,6 +362,7 @@ void Round(float deltaTime) {
 				flags.EnemyMove = false;
 			}
 		}
+		cout << "Player " << currentBet[0] << " Enemy " << currentBet[1] << endl;
 	}
 
 	//Displaying first 3 cards
