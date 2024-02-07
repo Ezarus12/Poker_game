@@ -61,6 +61,9 @@ public:
 				cout << "All in\n";
 				allIn = true;
 				return *money;
+				if (bigblind) {
+					flags.BigBlindCalled = true;
+				}
 			}
 			else {
 				cout << "Fold";
