@@ -110,8 +110,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	enemy.set_maxHandRank(scores[1].handRank);
 	enemy.set_money(&money[1]);
 
-	bigblind = 1;
-	//bigblind = Random(0, 1);
+	bigblind = Random(0, 1);
 
 	InitSounds();
 
@@ -128,30 +127,21 @@ void Game::handleEvents()
 			isRunning = false;
 			break;
 		case SDL_MOUSEWHEEL:
+			//Scrolling through poker Ranking
 			if (PokerRanking.getComponent<SpriteComponent>().get_show()) {
 				if (event.wheel.y > 0) // scroll up
 				{
-					int y = PokerRanking.getComponent<PositionComponent>().y();
 					float y2 = ScrollBar.getComponent<PositionComponent>().y();
-					if (y < 0) {
-						y += 10;
-						PokerRanking.getComponent<PositionComponent>().y(y);
-					}
-					if (y2 > 0) {
-						y2 -= 3.6;
+					if (y2 > 5) {
+						y2 -= 3;
 						ScrollBar.getComponent<PositionComponent>().y(y2);
 					}
 				}
 				else if (event.wheel.y < 0) // scroll down
 				{
-					int y = PokerRanking.getComponent<PositionComponent>().y();
 					float y2 = ScrollBar.getComponent<PositionComponent>().y();
-					if (y >= -450) {
-						y -= 10;
-						PokerRanking.getComponent<PositionComponent>().y(y);
-					}
-					if (y2 < 162) {
-						y2 += 3.6;
+					if (y2 < 158) {
+						y2 += 3;
 						ScrollBar.getComponent<PositionComponent>().y(y2);
 					}
 
@@ -167,6 +157,22 @@ void Game::update(float deltaTime)
 {
 	manager.update();
 	UpdateCursor();
+	PokerRankingUpdate();
+
+	if (PokerRanking.getComponent<SpriteComponent>().get_show()) {
+		if (ScrollBar.getComponent<MouseController>().down) {
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			
+			if (y > 5*r_scale && y < 158 * r_scale) {
+				ScrollBar.getComponent<PositionComponent>().y(y/r_scale);
+			}
+			
+			if (event.type == SDL_MOUSEBUTTONUP) {
+				ScrollBar.getComponent<MouseController>().down = false;
+			}
+		}
+	}
 
 	if (flags.GameEnded) {
 		BigBlindToken.getComponent<SpriteComponent>().hidden();

@@ -71,6 +71,7 @@ auto& Start_button(manager.addEntity());
 
 
 auto& PokerRanking(manager.addEntity());
+auto& PokerRankingBorder(manager.addEntity());
 auto& ScrollBar(manager.addEntity());
 
 //End round banners
@@ -255,9 +256,14 @@ void InitEntities() {
 	PokerRanking.addComponent<SpriteComponent>("assets/Poker_hand_ranking.png", 180, 646);
 	PokerRanking.getComponent<SpriteComponent>().hidden();
 
-	ScrollBar.addComponent<PositionComponent>(244, 0);
+	PokerRankingBorder.addComponent<PositionComponent>(70, 0);
+	PokerRankingBorder.addComponent<SpriteComponent>("assets/PokerRankingBorder.png", 180, 180);
+	PokerRankingBorder.getComponent<SpriteComponent>().hidden();
+
+	ScrollBar.addComponent<PositionComponent>(244, 5);
 	ScrollBar.addComponent<SpriteComponent>("assets/Scroll.png", 6, 18);
 	ScrollBar.getComponent<SpriteComponent>().hidden();
+	ScrollBar.addComponent<MouseController>();
 
 	//Round end banners
 	YouWonBanner.addComponent<PositionComponent>(0, 118);
