@@ -542,6 +542,12 @@ void NextRound(float deltaTime) {
 		currentBB *= 2;
 	}
 	cout << currentBB;
+
+	//reset enemy flags
+	enemy.set_fold(false);
+	enemy.set_raised(false);
+	enemy.set_AllIn(false);
+
 	flags.NextRoundFlags();
 	flags.NextRound = false;
 }

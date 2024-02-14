@@ -34,6 +34,10 @@ public:
 		return allIn;
 	}
 
+	void set_AllIn(bool f) {
+		allIn = f;
+	}
+
 	void Fold() {
 		fold = true;
 	}
