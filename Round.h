@@ -301,7 +301,7 @@ void Round(float deltaTime) {
 	}
 	else if (flags.fourthBet && flags.BigBlindCalled) {
 		flags.fourthBet = false;
-		flags.endRound = true;
+		flags.showCards = true;
 		flags.BigBlindCalled = false;
 		enemy.set_raised(false);
 	}
@@ -427,7 +427,23 @@ void Round(float deltaTime) {
 
 		card5.getComponent<SpriteComponent>().shown();
 		flags.Show5Card = false;
-		//flags.EnemyMove = true;
+	}
+	//Showing enemy's cards
+	if (flags.showCards) {
+		if (flags.enemyCardsShown) {
+			currentBet[0] = 0;
+			currentBet[1] = 0;
+			enemy_card1.getComponent<SpriteComponent>().changeSprite(players[1].c1.get_suit_int(), players[1].c1.get_rank() - 2);
+			enemy_card2.getComponent<SpriteComponent>().changeSprite(players[1].c2.get_suit_int(), players[1].c2.get_rank() - 2);
+			flags.enemyCardsShown = false;
+		}
+		if (Wait(deltaTime, 2)){
+			flags.endRound = true;
+			flags.showCards = false;
+		}
+		else {
+			return;
+		}
 	}
 
 	if (flags.endRound) {

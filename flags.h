@@ -12,6 +12,9 @@ public:
     bool HandleButtons = false;
     bool BigBlindCalled = false;
 
+    bool showCards = false;
+    bool enemyCardsShown = true;
+
     //flags for displaying cards on the table
     bool Show3Cards = false;
     bool Show4Card = false;
