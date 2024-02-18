@@ -60,6 +60,10 @@ auto& BigBlindNote(manager.addEntity());
 auto& SmallBlindToken(manager.addEntity());
 auto& SmallBlindNote(manager.addEntity());
 
+//Power Ups
+auto& PU_Joker(manager.addEntity());
+
+auto& PU_Border(manager.addEntity());
 
 /***********************
 	  L A Y E R  2
@@ -247,7 +251,16 @@ void InitEntities() {
 	SmallBlindNote.addComponent<SpriteComponent>("assets/SmallBlindNote.png", 51, 12);
 	SmallBlindNote.getComponent<SpriteComponent>().hidden();
 
-	
+	//Power Ups
+	PU_Border.addComponent<PositionComponent>(277,37);
+	PU_Border.addComponent<SpriteComponent>("assets/PowerUpBorder.png", 30, 30);
+	PU_Border.getComponent<SpriteComponent>().hidden();
+
+	PU_Joker.addComponent<PositionComponent>(279, 39);
+	PU_Joker.addComponent<SpriteComponent>("assets/JokerPU.png", 26, 26);
+	PU_Joker.addComponent<MouseController>();
+	PU_Joker.addComponent<MouseController>().setHover();
+
 	
 
 	//PokerRanking

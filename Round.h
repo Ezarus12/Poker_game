@@ -250,7 +250,7 @@ void Round(float deltaTime) {
 	}
 
 	// turning tokens
-	if (flags.BlindsCon) {
+	if (flags.BlindsConTurn) {
 		TurningBlinds(deltaTime);
 	}
 	if (flags.TakeBlinds) {

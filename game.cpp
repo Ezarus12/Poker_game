@@ -9,6 +9,7 @@
 #include "Sound/SoundEffects.h"
 #include "EnemyAI.h"
 #include "Wait.h"
+#include "PowerUps.h"
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 SDL_Texture* background;
@@ -158,6 +159,7 @@ void Game::update(float deltaTime)
 	manager.update();
 	UpdateCursor();
 	PokerRankingUpdate();
+	JokerPU();
 
 	if (PokerRanking.getComponent<SpriteComponent>().get_show()) {
 		if (ScrollBar.getComponent<MouseController>().down) {
@@ -182,6 +184,7 @@ void Game::update(float deltaTime)
 
 	if (flags.HandleButtons) {
 		HandleBetButtons();
+		PokerRankingTable();
 	}
 
 	if (flags.StartGame) {
@@ -204,8 +207,6 @@ void Game::update(float deltaTime)
 	{
 		NextRound(deltaTime);
 	}
-
-	PokerRankingTable();
 
 	Round(deltaTime);
 }

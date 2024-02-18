@@ -71,6 +71,7 @@ inline bool BlindsToss(int Blind, float deltaTime) {
 			BigBlindToken.getComponent<PositionComponent>().y(1);
 			SmallBlindToken.getComponent<PositionComponent>().x(242);
 			SmallBlindToken.getComponent<PositionComponent>().y(134);
+			flags.BlindsConTurn = true;
 			return true;
 		}
 	}
@@ -116,6 +117,7 @@ inline bool BlindsToss(int Blind, float deltaTime) {
 			BigBlindToken.getComponent<PositionComponent>().y(135);
 			SmallBlindToken.getComponent<PositionComponent>().x(122);
 			SmallBlindToken.getComponent<PositionComponent>().y(1);
+			flags.BlindsConTurn = true;
 			return true;
 		}
 	}
@@ -154,6 +156,7 @@ inline void TurningBlinds(float deltaTime)
 	}
 	else {
 		flags.HandleButtons = true;
+		flags.BlindsConTurn = false;
 	}
 }
 

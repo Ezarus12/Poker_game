@@ -6,6 +6,7 @@ public:
     bool GameEnded = false;
     bool EnemyMove = false;
     bool BlindsCon = false; //Condition to the action related to blinds
+    bool BlindsConTurn = false;
     bool NextRound = false;
     bool ResultCalc = false; //Is the the result of the round caluclated
     bool TakeBlinds = true;
