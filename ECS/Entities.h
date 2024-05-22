@@ -1,5 +1,6 @@
 #pragma once 
 
+extern Player player;
 
 SDL_Color red = { 148,0,0,255 };
 SDL_Color white = { 255,255,255,255 };
@@ -49,15 +50,20 @@ auto& money_text(manager.addEntity());
 auto& enemy_money_text(manager.addEntity());
 auto& bet_text(manager.addEntity());
 auto& pool_text(manager.addEntity());
+auto& betted_enemy_text(manager.addEntity());
 
 
 //Blinds sprites
-auto& BigBlind(manager.addEntity());
+auto& BigBlindToken(manager.addEntity());
 auto& BigBlindNote(manager.addEntity());
 
-auto& SmallBlind(manager.addEntity());
+auto& SmallBlindToken(manager.addEntity());
 auto& SmallBlindNote(manager.addEntity());
 
+//Power Ups
+auto& PU_Joker(manager.addEntity());
+
+auto& PU_Border(manager.addEntity());
 
 /***********************
 	  L A Y E R  2
@@ -69,6 +75,8 @@ auto& Start_button(manager.addEntity());
 
 
 auto& PokerRanking(manager.addEntity());
+auto& PokerRankingBorder(manager.addEntity());
+auto& ScrollBar(manager.addEntity());
 
 //End round banners
 auto& YouWonBanner(manager.addEntity());
@@ -193,7 +201,7 @@ void InitEntities() {
 
 	money_text.addComponent<PositionComponent>(16, 7);
 	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
-	money_text.getComponent<TextComponent>().setNum(&money[0]);
+	money_text.getComponent<TextComponent>().setNum(&player.money);
 
 	money_text.addComponent<PositionComponent>(132, 24);
 	money_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
@@ -207,30 +215,35 @@ void InitEntities() {
 	pool_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), red);
 	pool_text.getComponent<TextComponent>().setNum(&pool);
 
+	betted_enemy_text.addComponent<PositionComponent>(162, 24);
+	betted_enemy_text.addComponent<TextComponent>("assets/font.ttf", 11, std::to_string(0), white);
+	betted_enemy_text.getComponent<TextComponent>().setNum(&currentBet[1]);
+	betted_enemy_text.getComponent<TextComponent>().setShowable();
+
 	//Blinds
 	if (bigblind)
 	{
-		BigBlind.addComponent<PositionComponent>(160, 90);
+		BigBlindToken.addComponent<PositionComponent>(160, 90);
 		BigBlindNote.addComponent<PositionComponent>(139, 3);
 		SmallBlindNote.addComponent<PositionComponent>(190, 136);
-		SmallBlind.addComponent<PositionComponent>(160, 90);
+		SmallBlindToken.addComponent<PositionComponent>(160, 90);
 	}
 	else
 	{
-		BigBlind.addComponent<PositionComponent>(160, 90);
+		BigBlindToken.addComponent<PositionComponent>(160, 90);
 		BigBlindNote.addComponent<PositionComponent>(200, 136);
 		SmallBlindNote.addComponent<PositionComponent>(139, 3);
-		SmallBlind.addComponent<PositionComponent>(160, 90);
+		SmallBlindToken.addComponent<PositionComponent>(160, 90);
 	}
 
-	BigBlind.addComponent<SpriteComponent>("assets/BigBlindSpriteSheet.png", 16, 16);
-	BigBlind.addComponent<MouseController>();
-	BigBlind.getComponent<MouseController>().setHover();
+	BigBlindToken.addComponent<SpriteComponent>("assets/BigBlindSpriteSheet.png", 16, 16);
+	BigBlindToken.addComponent<MouseController>();
+	BigBlindToken.getComponent<MouseController>().setHover();
 
 
-	SmallBlind.addComponent<SpriteComponent>("assets/SmallBlindSpriteSheet.png", 16, 16);
-	SmallBlind.addComponent<MouseController>();
-	SmallBlind.getComponent<MouseController>().setHover();
+	SmallBlindToken.addComponent<SpriteComponent>("assets/SmallBlindSpriteSheet.png", 16, 16);
+	SmallBlindToken.addComponent<MouseController>();
+	SmallBlindToken.getComponent<MouseController>().setHover();
 
 	BigBlindNote.addComponent<SpriteComponent>("assets/BigBlindNote.png", 42, 12);
 	BigBlindNote.getComponent<SpriteComponent>().hidden();
@@ -238,7 +251,16 @@ void InitEntities() {
 	SmallBlindNote.addComponent<SpriteComponent>("assets/SmallBlindNote.png", 51, 12);
 	SmallBlindNote.getComponent<SpriteComponent>().hidden();
 
-	
+	//Power Ups
+	PU_Border.addComponent<PositionComponent>(277,37);
+	PU_Border.addComponent<SpriteComponent>("assets/PowerUpBorder.png", 30, 30);
+	PU_Border.getComponent<SpriteComponent>().hidden();
+
+	PU_Joker.addComponent<PositionComponent>(279, 39);
+	PU_Joker.addComponent<SpriteComponent>("assets/JokerPU.png", 26, 26);
+	PU_Joker.addComponent<MouseController>();
+	PU_Joker.addComponent<MouseController>().setHover();
+
 	
 
 	//PokerRanking
@@ -246,6 +268,15 @@ void InitEntities() {
 	PokerRanking.addComponent<PositionComponent>(70, 0);
 	PokerRanking.addComponent<SpriteComponent>("assets/Poker_hand_ranking.png", 180, 646);
 	PokerRanking.getComponent<SpriteComponent>().hidden();
+
+	PokerRankingBorder.addComponent<PositionComponent>(70, 0);
+	PokerRankingBorder.addComponent<SpriteComponent>("assets/PokerRankingBorder.png", 180, 180);
+	PokerRankingBorder.getComponent<SpriteComponent>().hidden();
+
+	ScrollBar.addComponent<PositionComponent>(244, 5);
+	ScrollBar.addComponent<SpriteComponent>("assets/Scroll.png", 6, 18);
+	ScrollBar.getComponent<SpriteComponent>().hidden();
+	ScrollBar.addComponent<MouseController>();
 
 	//Round end banners
 	YouWonBanner.addComponent<PositionComponent>(0, 118);

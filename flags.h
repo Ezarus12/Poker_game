@@ -6,10 +6,15 @@ public:
     bool GameEnded = false;
     bool EnemyMove = false;
     bool BlindsCon = false; //Condition to the action related to blinds
+    bool BlindsConTurn = false;
     bool NextRound = false;
     bool ResultCalc = false; //Is the the result of the round caluclated
     bool TakeBlinds = true;
     bool HandleButtons = false;
+    bool BigBlindCalled = false;
+
+    bool showCards = false;
+    bool enemyCardsShown = true;
 
     //flags for displaying cards on the table
     bool Show3Cards = false;
@@ -25,7 +30,6 @@ public:
 
     //Fold flags
     bool PlayerFolded = false;
-    bool EnemyFolded = false;
 
     //Animation flags
     bool RankingShown = false;

@@ -16,6 +16,7 @@ private:
 
 	int* num;
 	bool isNum = false;
+	bool showable = false;
 
 public:
 	TextComponent(const std::string& font_path, int font_size, const std::string& message, const SDL_Color& color){
@@ -52,6 +53,10 @@ public:
 		isNum = true;
 	}
 
+	void setShowable() {
+		showable = true;
+	}
+
 	void init() override
 	{
 		position = &entity->getComponent<PositionComponent>();
@@ -61,10 +66,21 @@ public:
 	{
 		text_rect.x = position->x();
 		text_rect.y = position->y();
-		if (*num != std::stoi(message_)) {
-			message_ = std::to_string(*num);
-			text_texture = loadFont(font_path_, font_size_, message_, color_);
-			SDL_QueryTexture(text_texture, nullptr, nullptr, &text_rect.w, &text_rect.h);
+		if (isNum && *num != std::stoi(message_)) {
+			if (showable && *num == 0) {
+				return;
+			}
+			else if (showable) {
+				message_ = std::to_string(*num);
+				message_ = '-' + message_;
+				text_texture = loadFont(font_path_, font_size_, message_, color_);
+				SDL_QueryTexture(text_texture, nullptr, nullptr, &text_rect.w, &text_rect.h);
+			}
+			else {
+				message_ = std::to_string(*num);
+				text_texture = loadFont(font_path_, font_size_, message_, color_);
+				SDL_QueryTexture(text_texture, nullptr, nullptr, &text_rect.w, &text_rect.h);
+			}
 		}
 		SDL_RenderCopy(Game::renderer, text_texture, nullptr, &text_rect);
 	}

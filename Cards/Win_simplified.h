@@ -81,6 +81,9 @@ int Flush_s(const vector<Card>& cards, int score) {
 }
 
 int SameRanks_s(const vector<Card>& cards, int score) {
+	if (cards.size() < 3) {
+		return score;
+	}
 	int index = 0;
 	int cnt;
 	for (size_t i = 0; i <= cards.size() - 3; ++i) {
