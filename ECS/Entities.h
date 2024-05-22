@@ -80,7 +80,7 @@ vector<Entity*> Stars1;
 
 //Creating 10 stars in one vector
 void InitStars1() {
-	for (int i = 0; i < 15; i++) {
+	for (int i = 0; i < 10; i++) {
 		auto& e = manager.addEntity();
 		e.addComponent<PositionComponent>();
 		e.getComponent<PositionComponent>().x(Random(0, 310));
