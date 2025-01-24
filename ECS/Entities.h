@@ -162,7 +162,7 @@ void InitEntities() {
 
 	//Enemies
 	cowboy.addComponent<PositionComponent>(60, 0);
-	cowboy.addComponent<SpriteComponent>("assets/Sheriff_Sheet.png", 60, 60);
+	cowboy.addComponent<SpriteComponent>("assets/Cowboy_sheet.png", 60, 60);
 	cowboy.addComponent<MouseController>();
 	cowboy.addComponent<AnimationComponent>(120, 60);
 

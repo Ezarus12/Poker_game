@@ -15,6 +15,10 @@ public:
 SDL_Texture* TextureManager::LoadTexture(const char* texture)
 {
 	SDL_Surface* tempSurface = IMG_Load(texture);
+	//Checking if the texture has been loaded
+	if (tempSurface == 0) {
+		std::cout << "Cannot load texture: " << texture << endl;
+	}
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(Game::renderer, tempSurface);
 	SDL_FreeSurface(tempSurface);
 
